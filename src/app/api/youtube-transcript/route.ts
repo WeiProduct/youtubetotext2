@@ -3,7 +3,7 @@ import { extractVideoId, getYouTubeTranscript } from '@/lib/youtube-transcript'
 
 export async function POST(request: NextRequest) {
   try {
-    const { url } = await request.json()
+    const { url, includeTimestamps } = await request.json()
     
     if (!url) {
       return NextResponse.json(
@@ -22,12 +22,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Get transcript using our utility function
-    const transcript = await getYouTubeTranscript(videoId)
+    const transcriptResult = await getYouTubeTranscript(videoId, includeTimestamps || false)
     
     return NextResponse.json({
       success: true,
       videoId,
-      transcript,
+      transcript: transcriptResult.text,
+      segments: transcriptResult.segments,
       url
     })
   } catch (error) {
@@ -37,4 +38,15 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
 }

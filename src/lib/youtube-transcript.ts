@@ -1,48 +1,112 @@
-export interface TranscriptResponse {
+import { YoutubeTranscript } from 'youtube-transcript'
+import axios from 'axios'
+
+export interface TranscriptSegment {
   text: string
   duration: number
   offset: number
 }
 
-export async function getYouTubeTranscript(videoId: string): Promise<string> {
+export interface TranscriptResult {
+  text: string
+  segments?: TranscriptSegment[]
+  language?: string
+}
+
+export async function getYouTubeTranscript(videoId: string, includeTimestamps: boolean = false): Promise<TranscriptResult> {
   try {
-    // First, try to get transcript from YouTube's innertube API
-    const transcript = await fetchFromInnertube(videoId)
+    // First try using the youtube-transcript library
+    const transcript = await fetchWithYoutubeTranscript(videoId, includeTimestamps)
     if (transcript) return transcript
 
-    // Fallback to scraping method
-    return await fetchByScraping(videoId)
+    // Fallback to alternative method
+    const alternativeTranscript = await fetchWithAlternativeMethod(videoId)
+    if (alternativeTranscript) return { text: alternativeTranscript }
+
+    throw new Error('No transcript available')
   } catch (error) {
     console.error('Error fetching transcript:', error)
+    if (error instanceof Error && error.message.includes('Transcript is disabled')) {
+      throw new Error('This video does not have captions enabled.')
+    }
+    if (error instanceof Error && error.message.includes('Could not find')) {
+      throw new Error('This video is not available or does not exist.')
+    }
     throw new Error('Unable to retrieve transcript for this video. It may not have captions available.')
   }
 }
 
-async function fetchFromInnertube(videoId: string): Promise<string | null> {
+async function fetchWithYoutubeTranscript(videoId: string, includeTimestamps: boolean): Promise<TranscriptResult | null> {
   try {
-    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`)
-    const html = await response.text()
+    const transcriptData = await YoutubeTranscript.fetchTranscript(videoId)
     
-    // Extract initial data
-    const ytInitialData = html.match(/var ytInitialPlayerResponse = ({.+?});/s)
-    if (!ytInitialData) return null
-    
-    const data = JSON.parse(ytInitialData[1])
-    const captionTracks = data?.captions?.playerCaptionsTracklistRenderer?.captionTracks
-    
-    if (!captionTracks || captionTracks.length === 0) return null
-    
-    // Get the first available caption track
+    if (!transcriptData || transcriptData.length === 0) {
+      return null
+    }
+
+    // Combine all transcript segments into a single text
+    const fullTranscript = transcriptData
+      .map((segment: any) => segment.text)
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+    const result: TranscriptResult = {
+      text: fullTranscript
+    }
+
+    if (includeTimestamps) {
+      result.segments = transcriptData.map((segment: any) => ({
+        text: segment.text,
+        duration: segment.duration || 0,
+        offset: segment.offset || 0
+      }))
+    }
+
+    return result
+  } catch (error) {
+    console.error('youtube-transcript library failed:', error)
+    return null
+  }
+}
+
+async function fetchWithAlternativeMethod(videoId: string): Promise<string | null> {
+  try {
+    // Alternative method using direct API call
+    const response = await axios.get(`https://www.youtube.com/watch?v=${videoId}`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
+    })
+
+    const html = response.data
+
+    // Try to extract captions from the page data
+    const ytInitialPlayerResponse = html.match(/var ytInitialPlayerResponse = ({.+?});/s)
+    if (!ytInitialPlayerResponse) return null
+
+    const playerData = JSON.parse(ytInitialPlayerResponse[1])
+    const captionTracks = playerData?.captions?.playerCaptionsTracklistRenderer?.captionTracks
+
+    if (!captionTracks || captionTracks.length === 0) {
+      return null
+    }
+
+    // Get the first available caption track (prefer English)
     const track = captionTracks.find((t: any) => t.languageCode === 'en') || captionTracks[0]
-    const captionUrl = track.baseUrl
     
-    // Fetch the captions
-    const captionResponse = await fetch(captionUrl)
-    const captionText = await captionResponse.text()
-    
-    // Parse XML and extract text
-    const textContent = captionText
-      .replace(/<[^>]*>/g, ' ')
+    // Fetch the actual captions
+    const captionResponse = await axios.get(track.baseUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    })
+
+    // Parse the XML response and extract text
+    const captionText = captionResponse.data
+      .replace(/<text[^>]*start="[\d.]+" dur="[\d.]+"[^>]*>/g, '')
+      .replace(/<\/text>/g, ' ')
       .replace(/&amp;/g, '&')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
@@ -50,34 +114,12 @@ async function fetchFromInnertube(videoId: string): Promise<string | null> {
       .replace(/&quot;/g, '"')
       .replace(/\s+/g, ' ')
       .trim()
-    
-    return textContent
+
+    return captionText
   } catch (error) {
-    console.error('Innertube method failed:', error)
+    console.error('Alternative method failed:', error)
     return null
   }
-}
-
-async function fetchByScraping(videoId: string): Promise<string> {
-  // This is a simplified version. In production, you might want to use
-  // a service like youtube-transcript or implement more robust scraping
-  
-  return `This is a sample transcript for video ${videoId}.
-
-In a production environment, you would implement one of these approaches:
-
-1. **YouTube Transcript API**: Use the official YouTube Data API v3 with proper authentication
-2. **Third-party Services**: Use services like youtube-transcript npm package
-3. **Browser Automation**: Use Puppeteer or Playwright to extract captions
-4. **Reverse Engineering**: Analyze YouTube's internal APIs (be careful with rate limits)
-
-For now, this is a placeholder transcript that demonstrates the functionality of the application.
-
-The actual implementation would extract real captions from the video, including:
-- Automatic captions generated by YouTube
-- Manual captions uploaded by the video creator
-- Multi-language support
-- Timestamps for each caption segment`
 }
 
 export function extractVideoId(url: string): string | null {

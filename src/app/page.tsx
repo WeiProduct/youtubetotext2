@@ -56,9 +56,29 @@ export default function Home() {
             loading={loading}
           />
 
-          {error && (
+          {loading && (
+            <div className="mt-8 flex flex-col items-center justify-center space-y-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <p className="text-gray-600 dark:text-gray-300">Extracting transcript...</p>
+            </div>
+          )}
+
+          {error && !loading && (
             <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-red-600 dark:text-red-400">{error}</p>
+              <div className="flex items-start space-x-3">
+                <svg className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="text-red-600 dark:text-red-400 font-medium">Error</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-1">{error}</p>
+                  {error.includes('captions') && (
+                    <p className="text-red-500 dark:text-red-300 text-xs mt-2">
+                      Tip: Try a different video that has captions/subtitles enabled.
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -69,6 +89,10 @@ export default function Home() {
             />
           )}
         </div>
+
+        <footer className="mt-16 text-center text-sm text-gray-500 dark:text-gray-400">
+          <p>Only works with videos that have captions enabled</p>
+        </footer>
       </div>
     </main>
   )
