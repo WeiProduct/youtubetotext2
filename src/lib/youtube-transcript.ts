@@ -15,22 +15,44 @@ export interface TranscriptResult {
 }
 
 export async function getYouTubeTranscript(videoId: string, includeTimestamps: boolean = false): Promise<TranscriptResult> {
+  const attemptLogs: string[] = []
+  
   try {
     // First try using the youtube-transcript library
+    attemptLogs.push('Attempting youtube-transcript library...')
     const transcript = await fetchWithYoutubeTranscript(videoId, includeTimestamps)
-    if (transcript) return transcript
+    if (transcript) {
+      attemptLogs.push('✓ Success with youtube-transcript library')
+      console.log('Transcript extraction attempts:', attemptLogs)
+      return transcript
+    }
+    attemptLogs.push('✗ youtube-transcript library failed')
 
     // Try youtubei.js as second method
+    attemptLogs.push('Attempting youtubei.js library...')
     const youtubeiTranscript = await fetchWithYoutubei(videoId, includeTimestamps)
-    if (youtubeiTranscript) return youtubeiTranscript
+    if (youtubeiTranscript) {
+      attemptLogs.push('✓ Success with youtubei.js')
+      console.log('Transcript extraction attempts:', attemptLogs)
+      return youtubeiTranscript
+    }
+    attemptLogs.push('✗ youtubei.js library failed')
 
     // Fallback to alternative method
+    attemptLogs.push('Attempting alternative scraping method...')
     const alternativeTranscript = await fetchWithAlternativeMethod(videoId)
-    if (alternativeTranscript) return { text: alternativeTranscript }
+    if (alternativeTranscript) {
+      attemptLogs.push('✓ Success with alternative method')
+      console.log('Transcript extraction attempts:', attemptLogs)
+      return { text: alternativeTranscript }
+    }
+    attemptLogs.push('✗ Alternative method failed')
 
-    throw new Error('No transcript available')
+    throw new Error('No transcript available after trying all methods')
   } catch (error) {
     console.error('Error fetching transcript:', error)
+    console.error('Attempt history:', attemptLogs)
+    
     if (error instanceof Error && error.message.includes('Transcript is disabled')) {
       throw new Error('This video does not have captions enabled.')
     }

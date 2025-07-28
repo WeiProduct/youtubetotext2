@@ -3,17 +3,21 @@
 import { useState } from 'react'
 import TranscriptDisplay from '@/components/TranscriptDisplay'
 import URLInput from '@/components/URLInput'
+import { useDebug } from '@/lib/debug-context'
 
 export default function Home() {
   const [transcript, setTranscript] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>('')
   const [videoUrl, setVideoUrl] = useState<string>('')
+  const { addLog } = useDebug()
 
   const handleExtractTranscript = async (url: string) => {
     setLoading(true)
     setError('')
     setVideoUrl(url)
+    
+    addLog('info', `Starting transcript extraction for URL: ${url}`)
     
     try {
       const response = await fetch('/api/youtube-transcript', {
@@ -25,14 +29,41 @@ export default function Home() {
       })
 
       const data = await response.json()
+      
+      // Log debug information from API
+      if (data.debug) {
+        addLog('info', 'API Debug Info', data.debug)
+      }
+      
+      addLog(
+        response.ok ? 'info' : 'error', 
+        `API Response: ${response.status}`, 
+        {
+          success: data.success,
+          error: data.error,
+          videoId: data.videoId,
+          debugSteps: data.debug?.steps
+        }
+      )
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to extract transcript')
       }
 
       setTranscript(data.transcript)
+      addLog('success', 'Transcript extracted successfully', {
+        videoId: data.videoId,
+        transcriptLength: data.transcript.length,
+        duration: data.debug?.duration ? `${data.debug.duration}ms` : 'unknown'
+      })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      setError(errorMessage)
+      addLog('error', 'Failed to extract transcript', {
+        error: errorMessage,
+        url: url,
+        stack: err instanceof Error ? err.stack : undefined
+      })
     } finally {
       setLoading(false)
     }
