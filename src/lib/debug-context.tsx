@@ -24,9 +24,9 @@ export function DebugProvider({ children }: { children: React.ReactNode }) {
   const [logs, setLogs] = useState<DebugLog[]>([])
   const [isDebugVisible, setIsDebugVisible] = useState(false)
   
-  // Disable debug in production unless explicitly enabled
-  const isDebugEnabled = process.env.NODE_ENV === 'development' || 
-    process.env.NEXT_PUBLIC_DEBUG_MODE === 'true'
+  // Enable debug logging in all environments for now
+  const isDebugEnabled = true
+  // Original: process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DEBUG_MODE === 'true'
 
   const addLog = useCallback((type: DebugLog['type'], message: string, details?: any) => {
     if (!isDebugEnabled) return

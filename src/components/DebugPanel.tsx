@@ -20,10 +20,11 @@ export default function DebugPanel() {
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [toggleDebug])
   
-  // Don't render in production unless explicitly enabled
-  if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_DEBUG_MODE !== 'true') {
-    return null
-  }
+  // Always show debug panel (can be toggled by user)
+  // Comment: Enable debug panel in production for now
+  // if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_DEBUG_MODE !== 'true') {
+  //   return null
+  // }
 
   if (!isDebugVisible) {
     return (
