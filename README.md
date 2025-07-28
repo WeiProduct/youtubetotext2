@@ -68,16 +68,51 @@ The application uses the `youtube-transcript` library to extract captions from Y
 
 ## Deployment
 
-Build the application for production:
+### Option 1: Deploy to Vercel (Recommended)
+
+Vercel is the easiest way to deploy this Next.js application with full API support.
+
+1. Click the button below to deploy:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/WeiProduct/Youtubetotext)
+
+2. Or deploy manually:
+   - Install Vercel CLI: `npm i -g vercel`
+   - Run `vercel` in the project directory
+   - Follow the prompts
+
+### Option 2: Deploy to GitHub Pages (Static Only)
+
+**Note**: GitHub Pages deployment will disable the API routes. The transcript extraction won't work.
+
+1. Update `next.config.mjs`:
+```javascript
+const nextConfig = {
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
+}
+```
+
+2. Build and deploy:
+```bash
+npm run build
+# The static files will be in the 'out' directory
+```
+
+### Option 3: Self-hosting
+
+Build and run the application:
 
 ```bash
 npm run build
 npm start
 ```
 
-Or deploy to Vercel:
+### Environment Variables
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/WeiProduct/Youtubetotext)
+No environment variables are required for basic functionality.
 
 ## Contributing
 

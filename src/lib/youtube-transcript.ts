@@ -1,5 +1,6 @@
 import { YoutubeTranscript } from 'youtube-transcript'
 import axios from 'axios'
+import { Innertube } from 'youtubei.js/web'
 
 export interface TranscriptSegment {
   text: string
@@ -19,6 +20,10 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
     const transcript = await fetchWithYoutubeTranscript(videoId, includeTimestamps)
     if (transcript) return transcript
 
+    // Try youtubei.js as second method
+    const youtubeiTranscript = await fetchWithYoutubei(videoId, includeTimestamps)
+    if (youtubeiTranscript) return youtubeiTranscript
+
     // Fallback to alternative method
     const alternativeTranscript = await fetchWithAlternativeMethod(videoId)
     if (alternativeTranscript) return { text: alternativeTranscript }
@@ -32,13 +37,41 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
     if (error instanceof Error && error.message.includes('Could not find')) {
       throw new Error('This video is not available or does not exist.')
     }
+    if (error instanceof Error && error.message.includes('No captions')) {
+      throw new Error('This video does not have captions available. Only videos with captions can be transcribed.')
+    }
     throw new Error('Unable to retrieve transcript for this video. It may not have captions available.')
   }
 }
 
 async function fetchWithYoutubeTranscript(videoId: string, includeTimestamps: boolean): Promise<TranscriptResult | null> {
   try {
-    const transcriptData = await YoutubeTranscript.fetchTranscript(videoId)
+    // Try different methods to get transcript
+    let transcriptData: any[] = []
+    
+    try {
+      // Method 1: Direct fetch
+      transcriptData = await YoutubeTranscript.fetchTranscript(videoId)
+    } catch (e1) {
+      console.log('Method 1 failed, trying alternative...')
+      
+      try {
+        // Method 2: With language preference
+        transcriptData = await YoutubeTranscript.fetchTranscript(videoId, {
+          lang: 'en'
+        })
+      } catch (e2) {
+        console.log('Method 2 failed, trying any language...')
+        
+        // Method 3: Get any available language
+        const transcriptList = await YoutubeTranscript.fetchTranscript(videoId, {
+          lang: undefined
+        })
+        if (transcriptList && transcriptList.length > 0) {
+          transcriptData = transcriptList
+        }
+      }
+    }
     
     if (!transcriptData || transcriptData.length === 0) {
       return null
@@ -66,6 +99,61 @@ async function fetchWithYoutubeTranscript(videoId: string, includeTimestamps: bo
     return result
   } catch (error) {
     console.error('youtube-transcript library failed:', error)
+    if (error instanceof Error) {
+      console.error('Error details:', error.message)
+    }
+    return null
+  }
+}
+
+async function fetchWithYoutubei(videoId: string, includeTimestamps: boolean): Promise<TranscriptResult | null> {
+  try {
+    const youtube = await Innertube.create()
+    const info = await youtube.getInfo(videoId)
+    
+    // Check if captions are available
+    const captionTracks = info.captions?.caption_tracks
+    if (!captionTracks || captionTracks.length === 0) {
+      console.log('No captions available via youtubei.js')
+      return null
+    }
+    
+    // Get the first available track (prefer English)
+    const track = captionTracks.find((t: any) => t.language_code === 'en') || captionTracks[0]
+    
+    // Fetch the transcript
+    const transcript = await youtube.getTranscript(videoId)
+    if (!transcript || !transcript.content || !transcript.content.body) {
+      return null
+    }
+    
+    const segments = transcript.content.body.initial_segments || []
+    const fullText = segments
+      .map((segment: any) => segment.snippet?.text || '')
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+    
+    if (!fullText) {
+      return null
+    }
+    
+    const result: TranscriptResult = {
+      text: fullText,
+      language: track.language_code
+    }
+    
+    if (includeTimestamps && segments.length > 0) {
+      result.segments = segments.map((segment: any) => ({
+        text: segment.snippet?.text || '',
+        duration: segment.duration_ms ? segment.duration_ms / 1000 : 0,
+        offset: segment.start_ms ? segment.start_ms / 1000 : 0
+      }))
+    }
+    
+    return result
+  } catch (error) {
+    console.error('youtubei.js method failed:', error)
     return null
   }
 }
