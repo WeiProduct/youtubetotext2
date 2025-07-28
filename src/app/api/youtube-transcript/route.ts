@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       transcript: transcriptResult.text,
       segments: transcriptResult.segments,
       url,
-      debug: debugInfo
+      ...(process.env.NODE_ENV === 'development' && { debug: debugInfo })
     })
   } catch (error) {
     console.error('Error processing YouTube URL:', error)
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: error instanceof Error ? error.message : 'Failed to extract transcript',
-        debug: debugInfo
+        ...(process.env.NODE_ENV === 'development' && { debug: debugInfo })
       },
       { status: 500 }
     )

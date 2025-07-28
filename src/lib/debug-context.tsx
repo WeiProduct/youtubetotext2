@@ -23,8 +23,14 @@ const DebugContext = createContext<DebugContextType | undefined>(undefined)
 export function DebugProvider({ children }: { children: React.ReactNode }) {
   const [logs, setLogs] = useState<DebugLog[]>([])
   const [isDebugVisible, setIsDebugVisible] = useState(false)
+  
+  // Disable debug in production unless explicitly enabled
+  const isDebugEnabled = process.env.NODE_ENV === 'development' || 
+    process.env.NEXT_PUBLIC_DEBUG_MODE === 'true'
 
   const addLog = useCallback((type: DebugLog['type'], message: string, details?: any) => {
+    if (!isDebugEnabled) return
+    
     const newLog: DebugLog = {
       id: Date.now().toString(),
       timestamp: new Date(),
@@ -35,10 +41,12 @@ export function DebugProvider({ children }: { children: React.ReactNode }) {
     
     setLogs(prev => [...prev, newLog].slice(-50)) // Keep last 50 logs
     
-    // Also log to console
-    const consoleMethod = type === 'error' ? 'error' : type === 'warning' ? 'warn' : 'log'
-    console[consoleMethod](`[${type.toUpperCase()}]`, message, details || '')
-  }, [])
+    // Also log to console in development
+    if (process.env.NODE_ENV === 'development') {
+      const consoleMethod = type === 'error' ? 'error' : type === 'warning' ? 'warn' : 'log'
+      console[consoleMethod](`[${type.toUpperCase()}]`, message, details || '')
+    }
+  }, [isDebugEnabled])
 
   const clearLogs = useCallback(() => {
     setLogs([])

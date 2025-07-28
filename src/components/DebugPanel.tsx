@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 export default function DebugPanel() {
   const { logs, clearLogs, isDebugVisible, toggleDebug } = useDebug()
   const [isExpanded, setIsExpanded] = useState(true)
-
+  
   // Add keyboard shortcut (Ctrl/Cmd + D)
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -19,6 +19,11 @@ export default function DebugPanel() {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [toggleDebug])
+  
+  // Don't render in production unless explicitly enabled
+  if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_DEBUG_MODE !== 'true') {
+    return null
+  }
 
   if (!isDebugVisible) {
     return (
