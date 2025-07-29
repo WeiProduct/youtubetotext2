@@ -1,6 +1,5 @@
 import { YoutubeTranscript } from 'youtube-transcript'
 import axios from 'axios'
-import { Innertube } from 'youtubei.js/web'
 
 export interface TranscriptSegment {
   text: string
@@ -16,53 +15,74 @@ export interface TranscriptResult {
 
 export async function getYouTubeTranscript(videoId: string, includeTimestamps: boolean = false): Promise<TranscriptResult> {
   const attemptLogs: string[] = []
+  const errors: string[] = []
   
   try {
     // First try using the youtube-transcript library
     attemptLogs.push('Attempting youtube-transcript library...')
-    const transcript = await fetchWithYoutubeTranscript(videoId, includeTimestamps)
-    if (transcript) {
-      attemptLogs.push('✓ Success with youtube-transcript library')
-      console.log('Transcript extraction attempts:', attemptLogs)
-      return transcript
+    try {
+      const transcript = await fetchWithYoutubeTranscript(videoId, includeTimestamps)
+      if (transcript) {
+        attemptLogs.push('✓ Success with youtube-transcript library')
+        console.log('Transcript extraction attempts:', attemptLogs)
+        return transcript
+      }
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : 'Unknown error'
+      errors.push(`youtube-transcript: ${errMsg}`)
+      attemptLogs.push(`✗ youtube-transcript failed: ${errMsg}`)
     }
-    attemptLogs.push('✗ youtube-transcript library failed')
-
-    // Try youtubei.js as second method
-    attemptLogs.push('Attempting youtubei.js library...')
-    const youtubeiTranscript = await fetchWithYoutubei(videoId, includeTimestamps)
-    if (youtubeiTranscript) {
-      attemptLogs.push('✓ Success with youtubei.js')
-      console.log('Transcript extraction attempts:', attemptLogs)
-      return youtubeiTranscript
-    }
-    attemptLogs.push('✗ youtubei.js library failed')
 
     // Fallback to alternative method
     attemptLogs.push('Attempting alternative scraping method...')
-    const alternativeTranscript = await fetchWithAlternativeMethod(videoId)
-    if (alternativeTranscript) {
-      attemptLogs.push('✓ Success with alternative method')
-      console.log('Transcript extraction attempts:', attemptLogs)
-      return { text: alternativeTranscript }
+    try {
+      const alternativeTranscript = await fetchWithAlternativeMethod(videoId)
+      if (alternativeTranscript) {
+        attemptLogs.push('✓ Success with alternative method')
+        console.log('Transcript extraction attempts:', attemptLogs)
+        return { text: alternativeTranscript }
+      }
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : 'Unknown error'
+      errors.push(`Alternative method: ${errMsg}`)
+      attemptLogs.push(`✗ Alternative method failed: ${errMsg}`)
     }
-    attemptLogs.push('✗ Alternative method failed')
 
-    throw new Error('No transcript available after trying all methods')
+    // Detailed error message with all attempts
+    const detailedError = [
+      'Failed to extract transcript after trying all methods.',
+      '',
+      'Attempt details:',
+      ...errors.map(e => `• ${e}`),
+      '',
+      'Video ID: ' + videoId,
+      'Make sure the video has captions/subtitles enabled.'
+    ].join('\n')
+    
+    throw new Error(detailedError)
   } catch (error) {
     console.error('Error fetching transcript:', error)
     console.error('Attempt history:', attemptLogs)
     
-    if (error instanceof Error && error.message.includes('Transcript is disabled')) {
-      throw new Error('This video does not have captions enabled.')
+    // If it's already our detailed error, throw it as is
+    if (error instanceof Error && error.message.includes('Attempt details:')) {
+      throw error
     }
-    if (error instanceof Error && error.message.includes('Could not find')) {
-      throw new Error('This video is not available or does not exist.')
+    
+    // Otherwise, try to parse specific errors
+    if (error instanceof Error) {
+      const errorMsg = error.message.toLowerCase()
+      if (errorMsg.includes('disabled') || errorMsg.includes('unavailable')) {
+        throw new Error('This video does not have captions enabled. Please try a video with CC/subtitles.')
+      }
+      if (errorMsg.includes('not found') || errorMsg.includes('invalid')) {
+        throw new Error('This video could not be found. Please check the URL.')
+      }
+      if (errorMsg.includes('private')) {
+        throw new Error('This video is private or age-restricted.')
+      }
     }
-    if (error instanceof Error && error.message.includes('No captions')) {
-      throw new Error('This video does not have captions available. Only videos with captions can be transcribed.')
-    }
-    throw new Error('Unable to retrieve transcript for this video. It may not have captions available.')
+    throw error
   }
 }
 
@@ -128,66 +148,6 @@ async function fetchWithYoutubeTranscript(videoId: string, includeTimestamps: bo
   }
 }
 
-async function fetchWithYoutubei(videoId: string, includeTimestamps: boolean): Promise<TranscriptResult | null> {
-  try {
-    const youtube = await Innertube.create()
-    const info = await youtube.getInfo(videoId)
-    
-    // Check if captions are available
-    const captions = info.captions
-    if (!captions) {
-      console.log('No captions available via youtubei.js')
-      return null
-    }
-    
-    // Get caption tracks
-    const tracks = captions.caption_tracks
-    if (!tracks || tracks.length === 0) {
-      return null
-    }
-    
-    // Get the first available track (prefer English)
-    const track = tracks.find((t: any) => t.language_code === 'en') || tracks[0]
-    
-    try {
-      // Fetch the transcript using the track
-      const response = await fetch(track.base_url)
-      const xmlText = await response.text()
-      
-      // Parse XML to extract text
-      const textMatches = xmlText.match(/<text[^>]*>([^<]+)<\/text>/g)
-      if (!textMatches) {
-        return null
-      }
-      
-      const fullText = textMatches
-        .map(match => match.replace(/<[^>]*>/g, ''))
-        .join(' ')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&#39;/g, "'")
-        .replace(/&quot;/g, '"')
-        .replace(/\s+/g, ' ')
-        .trim()
-      
-      if (!fullText) {
-        return null
-      }
-      
-      return {
-        text: fullText,
-        language: track.language_code
-      }
-    } catch (fetchError) {
-      console.error('Failed to fetch caption track:', fetchError)
-      return null
-    }
-  } catch (error) {
-    console.error('youtubei.js method failed:', error)
-    return null
-  }
-}
 
 async function fetchWithAlternativeMethod(videoId: string): Promise<string | null> {
   try {

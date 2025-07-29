@@ -47,7 +47,12 @@ export default function Home() {
       console.log('API Response:', data)
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to extract transcript')
+        // Include debug steps in error if available
+        let errorMsg = data.error || 'Failed to extract transcript'
+        if (data.debug && data.debug.steps) {
+          console.log('Debug steps:', data.debug.steps)
+        }
+        throw new Error(errorMsg)
       }
 
       if (data.transcript) {
@@ -203,12 +208,14 @@ export default function Home() {
           {error && (
             <div className="p-2 bg-red-900/50 rounded border border-red-700/50">
               <div className="text-red-400 font-bold">❌ ERROR DETAILS</div>
-              <div className="text-red-200 mt-1">
-                {error}<br/>
-                <span className="text-red-300 text-xs">
-                  Tip: Make sure the video has captions/CC enabled
-                </span>
+              <div className="text-red-200 mt-1 whitespace-pre-wrap">
+                {error}
               </div>
+              {!error.includes('Attempt details:') && (
+                <div className="text-red-300 text-xs mt-2">
+                  Tip: Make sure the video has captions/CC enabled
+                </div>
+              )}
             </div>
           )}
           

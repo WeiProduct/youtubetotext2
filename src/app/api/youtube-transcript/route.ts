@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: error instanceof Error ? error.message : 'Failed to extract transcript',
+        videoId,
         debug: debugInfo // Always include debug info for now
       },
       { status: 500 }
