@@ -79,6 +79,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      {/* Version indicator for debugging */}
+      <div className="fixed top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs">
+        v1.0.1 - Debug Enabled
+      </div>
+      
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white mb-4">
@@ -86,6 +91,9 @@ export default function Home() {
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             Extract transcripts from YouTube videos instantly
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            Press Ctrl/Cmd + D to toggle debug panel
           </p>
         </header>
 
