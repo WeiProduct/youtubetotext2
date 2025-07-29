@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import TranscriptDisplay from '@/components/TranscriptDisplay'
 import URLInput from '@/components/URLInput'
 import { useDebug } from '@/lib/debug-context'
@@ -11,6 +11,14 @@ export default function Home() {
   const [error, setError] = useState<string>('')
   const [videoUrl, setVideoUrl] = useState<string>('')
   const { addLog } = useDebug()
+  
+  // Add initial log to confirm debug panel is working
+  React.useEffect(() => {
+    addLog('info', 'YouTube to Text app loaded successfully', {
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV
+    })
+  }, [addLog])
 
   const handleExtractTranscript = async (url: string) => {
     setLoading(true)

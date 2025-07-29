@@ -22,7 +22,7 @@ const DebugContext = createContext<DebugContextType | undefined>(undefined)
 
 export function DebugProvider({ children }: { children: React.ReactNode }) {
   const [logs, setLogs] = useState<DebugLog[]>([])
-  const [isDebugVisible, setIsDebugVisible] = useState(false)
+  const [isDebugVisible, setIsDebugVisible] = useState(true) // Start with debug panel visible
   
   // Enable debug logging in all environments for now
   const isDebugEnabled = true
