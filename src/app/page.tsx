@@ -21,57 +21,53 @@ export default function Home() {
   }, [addLog])
 
   const handleExtractTranscript = async (url: string) => {
+    console.log('Starting extraction for:', url)
     setLoading(true)
     setError('')
     setVideoUrl(url)
-    
-    addLog('info', `Starting transcript extraction for URL: ${url}`)
+    setTranscript('') // Clear previous transcript
     
     try {
+      // Add timeout to prevent hanging
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+      
       const response = await fetch('/api/youtube-transcript', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ url }),
+        signal: controller.signal
       })
+      
+      clearTimeout(timeoutId)
 
       const data = await response.json()
-      
-      // Log debug information from API
-      if (data.debug) {
-        addLog('info', 'API Debug Info', data.debug)
-      }
-      
-      addLog(
-        response.ok ? 'info' : 'error', 
-        `API Response: ${response.status}`, 
-        {
-          success: data.success,
-          error: data.error,
-          videoId: data.videoId,
-          debugSteps: data.debug?.steps
-        }
-      )
+      console.log('API Response:', data)
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to extract transcript')
       }
 
-      setTranscript(data.transcript)
-      addLog('success', 'Transcript extracted successfully', {
-        videoId: data.videoId,
-        transcriptLength: data.transcript.length,
-        duration: data.debug?.duration ? `${data.debug.duration}ms` : 'unknown'
-      })
+      if (data.transcript) {
+        setTranscript(data.transcript)
+      } else {
+        throw new Error('No transcript data received')
+      }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      console.error('Extraction error:', err)
+      let errorMessage = 'An error occurred'
+      
+      if (err instanceof Error) {
+        if (err.name === 'AbortError') {
+          errorMessage = 'Request timed out after 30 seconds'
+        } else {
+          errorMessage = err.message
+        }
+      }
+      
       setError(errorMessage)
-      addLog('error', 'Failed to extract transcript', {
-        error: errorMessage,
-        url: url,
-        stack: err instanceof Error ? err.stack : undefined
-      })
     } finally {
       setLoading(false)
     }
@@ -143,29 +139,97 @@ export default function Home() {
       </div>
       
       {/* Inline Debug Panel - Always Visible */}
-      <div className="fixed bottom-4 right-4 w-96 max-h-96 overflow-y-auto bg-black/90 text-white p-4 rounded-lg shadow-2xl">
-        <h3 className="text-lg font-bold mb-2 text-green-400">🐛 Debug Console</h3>
-        <div className="space-y-2 text-xs font-mono">
-          <div className="p-2 bg-blue-900/50 rounded">
-            <span className="text-blue-400">INFO:</span> Debug panel is active
+      <div className="fixed bottom-4 right-4 w-96 max-h-[500px] bg-black/95 text-white rounded-lg shadow-2xl">
+        {/* Header */}
+        <div className="bg-gray-800 p-3 rounded-t-lg flex justify-between items-center">
+          <h3 className="text-sm font-bold text-green-400 flex items-center gap-2">
+            <span className="animate-pulse">🔴</span> Debug Console
+          </h3>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="text-gray-400 hover:text-white text-xs"
+          >
+            Refresh
+          </button>
+        </div>
+        
+        {/* Content */}
+        <div className="p-4 space-y-2 text-xs font-mono overflow-y-auto max-h-[400px]">
+          {/* Status */}
+          <div className="p-2 bg-blue-900/50 rounded border border-blue-700/50">
+            <div className="text-blue-400 font-bold">📊 STATUS</div>
+            <div className="text-blue-200 mt-1">
+              App Version: v1.0.1<br/>
+              Environment: Production<br/>
+              Debug Mode: Enabled<br/>
+              Time: {new Date().toLocaleTimeString()}
+            </div>
           </div>
-          {error && (
-            <div className="p-2 bg-red-900/50 rounded">
-              <span className="text-red-400">ERROR:</span> {error}
+          
+          {/* Current State */}
+          <div className="p-2 bg-purple-900/50 rounded border border-purple-700/50">
+            <div className="text-purple-400 font-bold">🔍 CURRENT STATE</div>
+            <div className="text-purple-200 mt-1">
+              Loading: {loading ? 'Yes' : 'No'}<br/>
+              Has Error: {error ? 'Yes' : 'No'}<br/>
+              Has Transcript: {transcript ? 'Yes' : 'No'}<br/>
+              URL Entered: {videoUrl ? 'Yes' : 'No'}
             </div>
-          )}
-          {loading && (
-            <div className="p-2 bg-yellow-900/50 rounded">
-              <span className="text-yellow-400">LOADING:</span> Extracting transcript...
-            </div>
-          )}
+          </div>
+          
+          {/* URL Info */}
           {videoUrl && (
-            <div className="p-2 bg-green-900/50 rounded">
-              <span className="text-green-400">URL:</span> {videoUrl}
+            <div className="p-2 bg-green-900/50 rounded border border-green-700/50">
+              <div className="text-green-400 font-bold">🔗 URL INFO</div>
+              <div className="text-green-200 mt-1 break-all">
+                {videoUrl}<br/>
+                Video ID: {videoUrl.match(/v=([^&]+)/)?.[1] || 'Unknown'}
+              </div>
             </div>
           )}
-          <div className="p-2 bg-gray-800 rounded">
-            <span className="text-gray-400">STATUS:</span> Ready
+          
+          {/* Loading State */}
+          {loading && (
+            <div className="p-2 bg-yellow-900/50 rounded border border-yellow-700/50">
+              <div className="text-yellow-400 font-bold animate-pulse">⏳ LOADING</div>
+              <div className="text-yellow-200 mt-1">
+                Extracting transcript...<br/>
+                This may take a few seconds
+              </div>
+            </div>
+          )}
+          
+          {/* Error Details */}
+          {error && (
+            <div className="p-2 bg-red-900/50 rounded border border-red-700/50">
+              <div className="text-red-400 font-bold">❌ ERROR DETAILS</div>
+              <div className="text-red-200 mt-1">
+                {error}<br/>
+                <span className="text-red-300 text-xs">
+                  Tip: Make sure the video has captions/CC enabled
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {/* Success */}
+          {transcript && !loading && (
+            <div className="p-2 bg-green-900/50 rounded border border-green-700/50">
+              <div className="text-green-400 font-bold">✅ SUCCESS</div>
+              <div className="text-green-200 mt-1">
+                Transcript extracted!<br/>
+                Length: {transcript.length} characters
+              </div>
+            </div>
+          )}
+          
+          {/* Instructions */}
+          <div className="p-2 bg-gray-800 rounded border border-gray-700">
+            <div className="text-gray-400 font-bold">ℹ️ INFO</div>
+            <div className="text-gray-300 mt-1">
+              This debug panel shows real-time app state.<br/>
+              Original debug panel (Ctrl+D) seems to be not loading.
+            </div>
           </div>
         </div>
       </div>
