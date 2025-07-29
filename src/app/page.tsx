@@ -141,6 +141,34 @@ export default function Home() {
           <p>Only works with videos that have captions enabled</p>
         </footer>
       </div>
+      
+      {/* Inline Debug Panel - Always Visible */}
+      <div className="fixed bottom-4 right-4 w-96 max-h-96 overflow-y-auto bg-black/90 text-white p-4 rounded-lg shadow-2xl">
+        <h3 className="text-lg font-bold mb-2 text-green-400">🐛 Debug Console</h3>
+        <div className="space-y-2 text-xs font-mono">
+          <div className="p-2 bg-blue-900/50 rounded">
+            <span className="text-blue-400">INFO:</span> Debug panel is active
+          </div>
+          {error && (
+            <div className="p-2 bg-red-900/50 rounded">
+              <span className="text-red-400">ERROR:</span> {error}
+            </div>
+          )}
+          {loading && (
+            <div className="p-2 bg-yellow-900/50 rounded">
+              <span className="text-yellow-400">LOADING:</span> Extracting transcript...
+            </div>
+          )}
+          {videoUrl && (
+            <div className="p-2 bg-green-900/50 rounded">
+              <span className="text-green-400">URL:</span> {videoUrl}
+            </div>
+          )}
+          <div className="p-2 bg-gray-800 rounded">
+            <span className="text-gray-400">STATUS:</span> Ready
+          </div>
+        </div>
+      </div>
     </main>
   )
 }
