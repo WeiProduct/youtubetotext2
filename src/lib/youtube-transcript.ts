@@ -1,5 +1,6 @@
 import { YoutubeTranscript } from 'youtube-transcript'
 import axios from 'axios'
+import { extractCaptionTracks, fetchCaptionContent, getVideoInfo } from './youtube-api'
 
 export interface TranscriptSegment {
   text: string
@@ -41,6 +42,9 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
         attemptLogs.push('✓ Success with alternative method')
         console.log('Transcript extraction attempts:', attemptLogs)
         return { text: alternativeTranscript }
+      } else {
+        attemptLogs.push('✗ Alternative method returned no transcript')
+        errors.push('Alternative method: No transcript found')
       }
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : 'Unknown error'
@@ -53,10 +57,16 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
       'Failed to extract transcript after trying all methods.',
       '',
       'Attempt details:',
-      ...errors.map(e => `• ${e}`),
+      ...attemptLogs.map(log => `  ${log}`),
+      '',
+      'Errors encountered:',
+      ...errors.map(e => `  • ${e}`),
       '',
       'Video ID: ' + videoId,
-      'Make sure the video has captions/subtitles enabled.'
+      'Video URL: https://www.youtube.com/watch?v=' + videoId,
+      '',
+      'Make sure the video has captions/subtitles enabled.',
+      'Some videos may have region-restricted captions or require authentication.'
     ].join('\n')
     
     throw new Error(detailedError)
@@ -151,52 +161,48 @@ async function fetchWithYoutubeTranscript(videoId: string, includeTimestamps: bo
 
 async function fetchWithAlternativeMethod(videoId: string): Promise<string | null> {
   try {
-    // Alternative method using direct API call
-    const response = await axios.get(`https://www.youtube.com/watch?v=${videoId}`, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-      }
-    })
-
-    const html = response.data
-
-    // Try to extract captions from the page data
-    const ytInitialPlayerResponse = html.match(/var ytInitialPlayerResponse = ({.+?});/s)
-    if (!ytInitialPlayerResponse) return null
-
-    const playerData = JSON.parse(ytInitialPlayerResponse[1])
-    const captionTracks = playerData?.captions?.playerCaptionsTracklistRenderer?.captionTracks
-
+    console.log(`Alternative method: Attempting to extract captions for video ${videoId}`)
+    
+    // First try to get video info
+    const videoInfo = await getVideoInfo(videoId)
+    if (videoInfo) {
+      console.log('Video info retrieved:', videoInfo.title)
+    }
+    
+    // Use our new robust extraction method
+    const captionTracks = await extractCaptionTracks(videoId)
+    
     if (!captionTracks || captionTracks.length === 0) {
+      console.log('No caption tracks found')
       return null
     }
-
-    // Get the first available caption track (prefer English)
-    const track = captionTracks.find((t: any) => t.languageCode === 'en') || captionTracks[0]
     
-    // Fetch the actual captions
-    const captionResponse = await axios.get(track.baseUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
-    })
-
-    // Parse the XML response and extract text
-    const captionText = captionResponse.data
-      .replace(/<text[^>]*start="[\d.]+" dur="[\d.]+"[^>]*>/g, '')
-      .replace(/<\/text>/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&#39;/g, "'")
-      .replace(/&quot;/g, '"')
-      .replace(/\s+/g, ' ')
-      .trim()
-
-    return captionText
+    console.log(`Found ${captionTracks.length} caption tracks`)
+    
+    // Prefer English tracks, but fallback to any available
+    const track = captionTracks.find((t: any) => 
+      t.languageCode === 'en' || 
+      t.languageCode === 'en-US' || 
+      t.languageCode === 'en-GB'
+    ) || captionTracks[0]
+    
+    console.log(`Using caption track: ${track.languageCode} - ${track.name?.simpleText || 'Default'}`)
+    
+    // Fetch the actual caption content
+    const captionText = await fetchCaptionContent(track.baseUrl)
+    
+    if (captionText) {
+      console.log(`Successfully extracted ${captionText.length} characters of caption text`)
+      return captionText
+    }
+    
+    return null
   } catch (error) {
     console.error('Alternative method failed:', error)
+    if (error instanceof Error) {
+      console.error('Error details:', error.message)
+      console.error('Stack trace:', error.stack)
+    }
     return null
   }
 }
