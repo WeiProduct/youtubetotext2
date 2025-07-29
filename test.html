@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Transcript Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; background: #0070f3; color: white; border: none; cursor: pointer; }
+        button:disabled { background: #ccc; }
+        .result { margin-top: 20px; padding: 20px; background: #f5f5f5; border-radius: 8px; }
+        .error { color: red; }
+        .success { color: green; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Transcript Extraction Test</h1>
+        
+        <div>
+            <label>YouTube URL:</label>
+            <input type="text" id="urlInput" value="https://www.youtube.com/watch?v=_GMtx9EsIKU" />
+            <button id="testBtn" onclick="testExtraction()">Test Extraction</button>
+        </div>
+        
+        <div id="result" class="result" style="display: none;">
+            <h3>Result:</h3>
+            <pre id="output"></pre>
+        </div>
+        
+        <div>
+            <h3>Test Videos:</h3>
+            <ul>
+                <li><a href="#" onclick="setUrl('https://www.youtube.com/watch?v=_GMtx9EsIKU'); return false;">Original Problem Video</a></li>
+                <li><a href="#" onclick="setUrl('https://www.youtube.com/watch?v=nKIu9yen5nc'); return false;">Google I/O Video</a></li>
+                <li><a href="#" onclick="setUrl('https://www.youtube.com/watch?v=8jPQjjsBbIc'); return false;">TED Talk</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function setUrl(url) {
+            document.getElementById('urlInput').value = url;
+        }
+        
+        async function testExtraction() {
+            const btn = document.getElementById('testBtn');
+            const output = document.getElementById('output');
+            const resultDiv = document.getElementById('result');
+            const url = document.getElementById('urlInput').value;
+            
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+            resultDiv.style.display = 'block';
+            output.textContent = 'Sending request...';
+            
+            try {
+                const response = await fetch('/api/youtube-transcript', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    output.innerHTML = '<span class="success">✓ Success!</span>\n\n';
+                    output.innerHTML += `Video ID: ${data.videoId}\n`;
+                    output.innerHTML += `Transcript Length: ${data.transcript.length} characters\n\n`;
+                    output.innerHTML += `First 500 characters:\n${data.transcript.substring(0, 500)}...\n\n`;
+                    
+                    if (data.debug) {
+                        output.innerHTML += '\nDebug Info:\n' + JSON.stringify(data.debug, null, 2);
+                    }
+                } else {
+                    output.innerHTML = '<span class="error">✗ Error!</span>\n\n';
+                    output.innerHTML += data.error || 'Unknown error';
+                    
+                    if (data.debug) {
+                        output.innerHTML += '\n\nDebug Info:\n' + JSON.stringify(data.debug, null, 2);
+                    }
+                }
+            } catch (error) {
+                output.innerHTML = '<span class="error">✗ Request Failed!</span>\n\n';
+                output.innerHTML += error.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Test Extraction';
+            }
+        }
+    </script>
+</body>
+</html>
