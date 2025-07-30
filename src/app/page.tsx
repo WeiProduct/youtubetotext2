@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import TranscriptDisplay from '@/components/TranscriptDisplay'
 import URLInput from '@/components/URLInput'
 import ManualSubtitleInput from '@/components/ManualSubtitleInput'
+import ClientTime from '@/components/ClientTime'
 import { useDebug } from '@/lib/debug-context'
 
 export default function Home() {
@@ -173,7 +174,7 @@ export default function Home() {
               App Version: v1.2.0<br/>
               Environment: Production<br/>
               Debug Mode: Enabled<br/>
-              Time: {new Date().toLocaleTimeString()}
+              Time: <ClientTime />
             </div>
           </div>
           
