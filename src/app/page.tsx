@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import TranscriptDisplay from '@/components/TranscriptDisplay'
 import URLInput from '@/components/URLInput'
+import ManualSubtitleInput from '@/components/ManualSubtitleInput'
 import { useDebug } from '@/lib/debug-context'
 
 export default function Home() {
@@ -117,13 +118,18 @@ export default function Home() {
                 <svg className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <div>
+                <div className="flex-1">
                   <p className="text-red-600 dark:text-red-400 font-medium">Error</p>
                   <p className="text-red-600 dark:text-red-400 text-sm mt-1">{error}</p>
                   {error.includes('captions') && (
-                    <p className="text-red-500 dark:text-red-300 text-xs mt-2">
-                      Tip: Try a different video that has captions/subtitles enabled.
-                    </p>
+                    <div className="mt-3">
+                      <p className="text-red-500 dark:text-red-300 text-xs">
+                        Tip: Try a different video or <ManualSubtitleInput onSubmit={(text) => {
+                          setTranscript(text)
+                          setError('')
+                        }} />
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>

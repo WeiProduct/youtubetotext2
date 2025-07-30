@@ -1,6 +1,8 @@
 import { YoutubeTranscript } from 'youtube-transcript'
 import axios from 'axios'
 import { extractCaptionTracks, fetchCaptionContent, getVideoInfo } from './youtube-api'
+import { fetchTranscriptExternal } from './youtube-external'
+import { getTranscriptViaInnerTube } from './youtube-innertube'
 
 export interface TranscriptSegment {
   text: string
@@ -50,6 +52,43 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
       const errMsg = e instanceof Error ? e.message : 'Unknown error'
       errors.push(`Alternative method: ${errMsg}`)
       attemptLogs.push(`✗ Alternative method failed: ${errMsg}`)
+    }
+
+    // Try InnerTube API
+    attemptLogs.push('Attempting YouTube InnerTube API...')
+    try {
+      const innerTubeTranscript = await getTranscriptViaInnerTube(videoId)
+      if (innerTubeTranscript) {
+        attemptLogs.push('✓ Success with InnerTube API')
+        console.log('Transcript extraction attempts:', attemptLogs)
+        return { text: innerTubeTranscript }
+      } else {
+        attemptLogs.push('✗ InnerTube API returned no transcript')
+        errors.push('InnerTube API: No transcript found')
+      }
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : 'Unknown error'
+      errors.push(`InnerTube API: ${errMsg}`)
+      attemptLogs.push(`✗ InnerTube API failed: ${errMsg}`)
+    }
+
+    // Fallback to external services
+    attemptLogs.push('Attempting external transcript services...')
+    try {
+      const externalResult = await fetchTranscriptExternal(videoId)
+      if (externalResult.success && externalResult.text) {
+        attemptLogs.push(`✓ Success with external service: ${externalResult.method}`)
+        console.log('Transcript extraction attempts:', attemptLogs)
+        return { text: externalResult.text }
+      } else {
+        const errMsg = externalResult.error || 'No transcript found'
+        errors.push(`External services: ${errMsg}`)
+        attemptLogs.push(`✗ External services failed: ${errMsg}`)
+      }
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : 'Unknown error'
+      errors.push(`External services: ${errMsg}`)
+      attemptLogs.push(`✗ External services failed: ${errMsg}`)
     }
 
     // Detailed error message with all attempts

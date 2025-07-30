@@ -1,0 +1,183 @@
+// YouTube InnerTube API - Direct API access
+import axios from 'axios'
+
+const INNERTUBE_API_KEY = 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8' // Public API key from YouTube
+const INNERTUBE_CLIENT_VERSION = '2.20240229.00.00'
+
+interface InnerTubeConfig {
+  key: string
+  clientName: string
+  clientVersion: string
+}
+
+const INNERTUBE_CLIENTS = {
+  WEB: {
+    key: INNERTUBE_API_KEY,
+    clientName: 'WEB',
+    clientVersion: INNERTUBE_CLIENT_VERSION
+  },
+  ANDROID: {
+    key: INNERTUBE_API_KEY,
+    clientName: 'ANDROID',
+    clientVersion: '19.09.37'
+  }
+}
+
+async function makeInnerTubeRequest(endpoint: string, body: any, client = INNERTUBE_CLIENTS.WEB) {
+  const url = `https://www.youtube.com/youtubei/v1/${endpoint}?key=${client.key}`
+  
+  const payload = {
+    ...body,
+    context: {
+      client: {
+        clientName: client.clientName,
+        clientVersion: client.clientVersion,
+        gl: 'US',
+        hl: 'en'
+      }
+    }
+  }
+  
+  try {
+    const response = await axios.post(url, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'X-YouTube-Client-Name': client.clientName === 'WEB' ? '1' : '3',
+        'X-YouTube-Client-Version': client.clientVersion
+      }
+    })
+    
+    return response.data
+  } catch (error) {
+    console.error('InnerTube request failed:', error)
+    throw error
+  }
+}
+
+export async function getTranscriptViaInnerTube(videoId: string): Promise<string | null> {
+  try {
+    console.log('Attempting InnerTube API extraction...')
+    
+    // First, get video info
+    const videoInfo = await makeInnerTubeRequest('player', {
+      videoId: videoId,
+      contentCheckOk: true,
+      racyCheckOk: true
+    })
+    
+    if (!videoInfo || !videoInfo.captions) {
+      console.log('No captions found in video info')
+      return null
+    }
+    
+    const captionTracks = videoInfo.captions?.playerCaptionsTracklistRenderer?.captionTracks
+    if (!captionTracks || captionTracks.length === 0) {
+      console.log('No caption tracks available')
+      return null
+    }
+    
+    // Find English caption track
+    const englishTrack = captionTracks.find((track: any) => 
+      track.languageCode === 'en' || 
+      track.languageCode === 'en-US' ||
+      track.languageCode.startsWith('en')
+    ) || captionTracks[0]
+    
+    if (!englishTrack || !englishTrack.baseUrl) {
+      console.log('No suitable caption track found')
+      return null
+    }
+    
+    console.log(`Found caption track: ${englishTrack.languageCode}`)
+    
+    // Fetch the captions
+    const captionResponse = await axios.get(englishTrack.baseUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    })
+    
+    // Parse the caption XML
+    const captionText = parseCaptionXML(captionResponse.data)
+    return captionText
+    
+  } catch (error) {
+    console.error('InnerTube extraction failed:', error)
+    
+    // Try Android client as fallback
+    try {
+      console.log('Trying Android client...')
+      const videoInfo = await makeInnerTubeRequest('player', {
+        videoId: videoId,
+        contentCheckOk: true,
+        racyCheckOk: true
+      }, INNERTUBE_CLIENTS.ANDROID)
+      
+      const captionTracks = videoInfo.captions?.playerCaptionsTracklistRenderer?.captionTracks
+      if (captionTracks && captionTracks.length > 0) {
+        const track = captionTracks[0]
+        const captionResponse = await axios.get(track.baseUrl)
+        return parseCaptionXML(captionResponse.data)
+      }
+    } catch (androidError) {
+      console.error('Android client also failed:', androidError)
+    }
+    
+    return null
+  }
+}
+
+function parseCaptionXML(xml: string): string {
+  try {
+    // Remove XML tags and decode entities
+    const text = xml
+      .replace(/<transcript>/g, '')
+      .replace(/<\/transcript>/g, '')
+      .replace(/<text[^>]*start="[\d.]+" dur="[\d.]+"[^>]*>/g, '')
+      .replace(/<\/text>/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&#x27;/g, "'")
+      .replace(/&#x2F;/g, '/')
+      .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
+      .replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
+      .replace(/\s+/g, ' ')
+      .trim()
+    
+    return text
+  } catch (error) {
+    console.error('Error parsing caption XML:', error)
+    return xml // Return raw XML as fallback
+  }
+}
+
+// Alternative: Use get_video_info endpoint
+export async function getVideoInfoLegacy(videoId: string): Promise<any> {
+  try {
+    const response = await axios.get(
+      `https://www.youtube.com/get_video_info?video_id=${videoId}&el=detailpage&hl=en`,
+      {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      }
+    )
+    
+    // Parse URL-encoded response
+    const params = new URLSearchParams(response.data)
+    const playerResponse = params.get('player_response')
+    
+    if (playerResponse) {
+      return JSON.parse(playerResponse)
+    }
+    
+    return null
+  } catch (error) {
+    console.error('get_video_info failed:', error)
+    return null
+  }
+}
