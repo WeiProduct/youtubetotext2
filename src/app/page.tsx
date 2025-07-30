@@ -84,7 +84,7 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       {/* Version indicator for debugging */}
       <div className="fixed top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs">
-        v1.2.0 - Multiple Extraction Methods
+        v1.2.0 - Build {new Date().toISOString().split('T')[0]}
       </div>
       
       <div className="container mx-auto px-4 py-8">
