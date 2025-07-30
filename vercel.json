@@ -4,10 +4,17 @@
   "functions": {
     "app/api/youtube-transcript/route.ts": {
       "maxDuration": 30
+    },
+    "app/api/health/route.ts": {
+      "maxDuration": 10
+    },
+    "app/api/proxy/route.ts": {
+      "maxDuration": 20
     }
   },
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "FORCE_REBUILD": "2025-07-30"
   },
   "build": {
     "env": {
