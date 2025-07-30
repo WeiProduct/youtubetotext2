@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
     timestamp: new Date().toISOString(),
     steps: []
   }
+  let videoId: string | null = null
 
   try {
     const { url, includeTimestamps } = await request.json()
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Extract video ID from YouTube URL
-    const videoId = extractVideoId(url)
+    videoId = extractVideoId(url)
     debugInfo.steps.push({ step: 'Extract video ID', videoId })
     
     if (!videoId) {
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: error instanceof Error ? error.message : 'Failed to extract transcript',
-        videoId,
+        videoId: videoId || undefined,
         debug: debugInfo // Always include debug info for now
       },
       { status: 500 }

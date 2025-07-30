@@ -103,7 +103,7 @@ export default function ManualSubtitleInput({ onSubmit }: ManualSubtitleInputPro
               <div className="mt-2 text-xs text-gray-500 space-y-1">
                 <p>1. Open YouTube video → Settings → Subtitles → View all</p>
                 <p>2. Right-click on subtitle language → Copy link address</p>
-                <p>3. Or use browser developer tools (F12) → Network tab → Look for "timedtext" requests</p>
+                <p>3. Or use browser developer tools (F12) → Network tab → Look for &quot;timedtext&quot; requests</p>
               </div>
             </details>
           </div>
