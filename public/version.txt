@@ -1,4 +1,4 @@
-Version: 1.2.0
+Version: 2.2.0
 Build Time: 2025-07-30T05:16:00Z
 Features:
 - Multiple extraction methods
