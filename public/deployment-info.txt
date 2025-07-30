@@ -1,0 +1,8 @@
+Deployment Information
+=====================
+Project: YouTube to Text Converter
+Version: 1.2.0
+Auto-Deploy: Enabled
+GitHub Repo: WeiProduct/youtubetotext2
+Vercel URL: https://yt-text-app.vercel.app
+Last Updated: 2025-07-30
