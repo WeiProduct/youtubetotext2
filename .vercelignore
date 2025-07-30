@@ -1,0 +1,25 @@
+# Vercel ignore file
+.git
+.gitignore
+README.md
+.next
+node_modules
+.env.local
+.env*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+*.pem
+.vscode
+.idea
+test-*.js
+test-*.ts
+*.test.js
+*.test.ts
+check-deployment.sh
+DEPLOY_GUIDE.md
+deploy-to-vercel.md
+TEST_REPORT.md
+UPDATE_STATUS.md
+LOCAL_TESTING.md
