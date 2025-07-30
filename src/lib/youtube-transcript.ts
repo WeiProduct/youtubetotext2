@@ -3,6 +3,7 @@ import axios from 'axios'
 import { extractCaptionTracks, fetchCaptionContent, getVideoInfo } from './youtube-api'
 import { fetchTranscriptExternal } from './youtube-external'
 import { getTranscriptViaInnerTube } from './youtube-innertube'
+import { getSubtitlesDirectly, detectVideoLanguage } from './youtube-direct'
 
 export interface TranscriptSegment {
   text: string
@@ -21,7 +22,25 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
   const errors: string[] = []
   
   try {
-    // First try using the youtube-transcript library
+    // PRIORITY 1: InnerTube API (most reliable)
+    attemptLogs.push('Attempting YouTube InnerTube API...')
+    try {
+      const innerTubeTranscript = await getTranscriptViaInnerTube(videoId)
+      if (innerTubeTranscript) {
+        attemptLogs.push('✓ Success with InnerTube API')
+        console.log('Transcript extraction attempts:', attemptLogs)
+        return { text: innerTubeTranscript }
+      } else {
+        attemptLogs.push('✗ InnerTube API returned no transcript')
+        errors.push('InnerTube API: No transcript found')
+      }
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : 'Unknown error'
+      errors.push(`InnerTube API: ${errMsg}`)
+      attemptLogs.push(`✗ InnerTube API failed: ${errMsg}`)
+    }
+    
+    // PRIORITY 2: Try youtube-transcript library
     attemptLogs.push('Attempting youtube-transcript library...')
     try {
       const transcript = await fetchWithYoutubeTranscript(videoId, includeTimestamps)
@@ -54,22 +73,34 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
       attemptLogs.push(`✗ Alternative method failed: ${errMsg}`)
     }
 
-    // Try InnerTube API
-    attemptLogs.push('Attempting YouTube InnerTube API...')
+    // Try direct URL method as last resort (not working reliably)
+    attemptLogs.push('Attempting direct URL subtitle extraction...')
     try {
-      const innerTubeTranscript = await getTranscriptViaInnerTube(videoId)
-      if (innerTubeTranscript) {
-        attemptLogs.push('✓ Success with InnerTube API')
+      // Try to detect video language first
+      const detectedLang = await detectVideoLanguage(videoId)
+      attemptLogs.push(`Detected language: ${detectedLang}`)
+      
+      // Try direct URL method with detected language
+      const directSubtitles = await getSubtitlesDirectly(videoId, detectedLang)
+      if (directSubtitles) {
+        attemptLogs.push('✓ Success with direct URL method!')
         console.log('Transcript extraction attempts:', attemptLogs)
-        return { text: innerTubeTranscript }
-      } else {
-        attemptLogs.push('✗ InnerTube API returned no transcript')
-        errors.push('InnerTube API: No transcript found')
+        return { text: directSubtitles }
+      }
+      
+      // If detected language failed, try English as fallback
+      if (detectedLang !== 'en') {
+        const englishSubtitles = await getSubtitlesDirectly(videoId, 'en')
+        if (englishSubtitles) {
+          attemptLogs.push('✓ Success with direct URL method (English fallback)!')
+          console.log('Transcript extraction attempts:', attemptLogs)
+          return { text: englishSubtitles }
+        }
       }
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : 'Unknown error'
-      errors.push(`InnerTube API: ${errMsg}`)
-      attemptLogs.push(`✗ InnerTube API failed: ${errMsg}`)
+      errors.push(`Direct URL: ${errMsg}`)
+      attemptLogs.push(`✗ Direct URL method failed: ${errMsg}`)
     }
 
     // Fallback to external services

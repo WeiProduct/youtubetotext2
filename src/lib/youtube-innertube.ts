@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 const INNERTUBE_API_KEY = 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8' // Public API key from YouTube
-const INNERTUBE_CLIENT_VERSION = '2.20240229.00.00'
+const INNERTUBE_CLIENT_VERSION = '2.20240726.00.00' // Updated version
 
 interface InnerTubeConfig {
   key: string
@@ -14,12 +14,16 @@ const INNERTUBE_CLIENTS = {
   WEB: {
     key: INNERTUBE_API_KEY,
     clientName: 'WEB',
-    clientVersion: INNERTUBE_CLIENT_VERSION
+    clientVersion: INNERTUBE_CLIENT_VERSION,
+    clientScreen: 'WATCH',
+    platform: 'DESKTOP'
   },
   ANDROID: {
     key: INNERTUBE_API_KEY,
     clientName: 'ANDROID',
-    clientVersion: '19.09.37'
+    clientVersion: '19.09.37',
+    clientScreen: 'EMBED',
+    platform: 'MOBILE'
   }
 }
 
@@ -32,8 +36,25 @@ async function makeInnerTubeRequest(endpoint: string, body: any, client = INNERT
       client: {
         clientName: client.clientName,
         clientVersion: client.clientVersion,
+        clientScreen: client.clientScreen,
+        platform: client.platform,
         gl: 'US',
-        hl: 'en'
+        hl: 'en',
+        timeZone: 'UTC',
+        utcOffsetMinutes: 0
+      },
+      user: {
+        lockedSafetyMode: false
+      },
+      request: {
+        useSsl: true,
+        internalExperimentFlags: [],
+        consistencyTokenJars: []
+      }
+    },
+    playbackContext: {
+      contentPlaybackContext: {
+        signatureTimestamp: 19950
       }
     }
   }
@@ -42,9 +63,13 @@ async function makeInnerTubeRequest(endpoint: string, body: any, client = INNERT
     const response = await axios.post(url, payload, {
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Origin': 'https://www.youtube.com',
+        'Referer': 'https://www.youtube.com',
         'X-YouTube-Client-Name': client.clientName === 'WEB' ? '1' : '3',
-        'X-YouTube-Client-Version': client.clientVersion
+        'X-YouTube-Client-Version': client.clientVersion,
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9'
       }
     })
     
