@@ -155,28 +155,40 @@ export async function getTranscriptViaInnerTube(videoId: string): Promise<string
 
 function parseCaptionXML(xml: string): string {
   try {
-    // Remove XML tags and decode entities
-    const text = xml
-      .replace(/<transcript>/g, '')
-      .replace(/<\/transcript>/g, '')
-      .replace(/<text[^>]*start="[\d.]+" dur="[\d.]+"[^>]*>/g, '')
-      .replace(/<\/text>/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      .replace(/&#x27;/g, "'")
-      .replace(/&#x2F;/g, '/')
-      .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
-      .replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
+    // Extract text content from XML
+    const textMatches = xml.match(/<text[^>]*>([^<]+)<\/text>/g)
+    if (!textMatches) {
+      console.error('No text elements found in XML')
+      return ''
+    }
+    
+    // Extract and decode text content
+    const textContent = textMatches
+      .map(match => {
+        // Extract text between tags
+        const textMatch = match.match(/>([^<]+)</)
+        if (!textMatch) return ''
+        
+        // Decode HTML entities
+        return textMatch[1]
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'")
+          .replace(/&#x27;/g, "'")
+          .replace(/&#x2F;/g, '/')
+          .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(parseInt(dec)))
+          .replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
+      })
+      .join(' ')
       .replace(/\s+/g, ' ')
       .trim()
     
-    return text
+    return textContent
   } catch (error) {
     console.error('Error parsing caption XML:', error)
-    return xml // Return raw XML as fallback
+    return ''
   }
 }
 
