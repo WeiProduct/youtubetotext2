@@ -84,7 +84,7 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       {/* Version indicator for debugging */}
       <div className="fixed top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs">
-        v3.2.0 - Build {new Date().toISOString().split('T')[0]}
+        v3.2.1 - Build {new Date().toISOString().split('T')[0]}
       </div>
       
       <div className="container mx-auto px-4 py-8">
@@ -171,7 +171,7 @@ export default function Home() {
           <div className="p-2 bg-blue-900/50 rounded border border-blue-700/50">
             <div className="text-blue-400 font-bold">📊 STATUS</div>
             <div className="text-blue-200 mt-1">
-              App Version: v3.2.0<br/>
+              App Version: v3.2.1<br/>
               Environment: Production<br/>
               Debug Mode: Enabled<br/>
               Time: <ClientTime />
