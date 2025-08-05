@@ -4,6 +4,7 @@ import { extractCaptionTracks, fetchCaptionContent, getVideoInfo } from './youtu
 import { fetchTranscriptExternal } from './youtube-external'
 import { getTranscriptViaInnerTube } from './youtube-innertube'
 import { getSubtitlesDirectly, detectVideoLanguage } from './youtube-direct'
+import { logStart, logSuccess, logError, logInfo, debugLogger, getDebugReport } from './debug-logger'
 
 export interface TranscriptSegment {
   text: string
@@ -21,31 +22,41 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
   const attemptLogs: string[] = []
   const errors: string[] = []
   
+  // Clear previous logs and start fresh
+  debugLogger.clearLogs()
+  logStart('getYouTubeTranscript', `Starting transcript extraction for video: ${videoId}`, { videoId, includeTimestamps })
+  
   try {
     // PRIORITY 1: InnerTube API (most reliable)
     attemptLogs.push('Attempting YouTube InnerTube API...')
+    logStart('InnerTube API', 'Attempting to extract transcript via InnerTube API')
     try {
       const innerTubeTranscript = await getTranscriptViaInnerTube(videoId)
       if (innerTubeTranscript) {
         attemptLogs.push('✓ Success with InnerTube API')
+        logSuccess('InnerTube API', 'Successfully extracted transcript', { textLength: innerTubeTranscript.length })
         console.log('Transcript extraction attempts:', attemptLogs)
         return { text: innerTubeTranscript }
       } else {
         attemptLogs.push('✗ InnerTube API returned no transcript')
         errors.push('InnerTube API: No transcript found')
+        logError('InnerTube API', 'No transcript found in response')
       }
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : 'Unknown error'
       errors.push(`InnerTube API: ${errMsg}`)
       attemptLogs.push(`✗ InnerTube API failed: ${errMsg}`)
+      logError('InnerTube API', `Failed with error: ${errMsg}`, { error: e })
     }
     
     // PRIORITY 2: Try youtube-transcript library
     attemptLogs.push('Attempting youtube-transcript library...')
+    logStart('youtube-transcript', 'Attempting to extract transcript via youtube-transcript library')
     try {
       const transcript = await fetchWithYoutubeTranscript(videoId, includeTimestamps)
       if (transcript) {
         attemptLogs.push('✓ Success with youtube-transcript library')
+        logSuccess('youtube-transcript', 'Successfully extracted transcript', { textLength: transcript.text.length, hasSegments: !!transcript.segments })
         console.log('Transcript extraction attempts:', attemptLogs)
         return transcript
       }
@@ -53,46 +64,56 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
       const errMsg = e instanceof Error ? e.message : 'Unknown error'
       errors.push(`youtube-transcript: ${errMsg}`)
       attemptLogs.push(`✗ youtube-transcript failed: ${errMsg}`)
+      logError('youtube-transcript', `Failed with error: ${errMsg}`, { error: e })
     }
 
     // Fallback to alternative method
     attemptLogs.push('Attempting alternative scraping method...')
+    logStart('Alternative Method', 'Attempting to extract transcript via alternative scraping')
     try {
       const alternativeTranscript = await fetchWithAlternativeMethod(videoId)
       if (alternativeTranscript) {
         attemptLogs.push('✓ Success with alternative method')
+        logSuccess('Alternative Method', 'Successfully extracted transcript', { textLength: alternativeTranscript.length })
         console.log('Transcript extraction attempts:', attemptLogs)
         return { text: alternativeTranscript }
       } else {
         attemptLogs.push('✗ Alternative method returned no transcript')
         errors.push('Alternative method: No transcript found')
+        logError('Alternative Method', 'No transcript found')
       }
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : 'Unknown error'
       errors.push(`Alternative method: ${errMsg}`)
       attemptLogs.push(`✗ Alternative method failed: ${errMsg}`)
+      logError('Alternative Method', `Failed with error: ${errMsg}`, { error: e })
     }
 
     // Try direct URL method as last resort (not working reliably)
     attemptLogs.push('Attempting direct URL subtitle extraction...')
+    logStart('Direct URL', 'Attempting to extract transcript via direct URL')
     try {
       // Try to detect video language first
       const detectedLang = await detectVideoLanguage(videoId)
       attemptLogs.push(`Detected language: ${detectedLang}`)
+      logInfo('Direct URL', `Detected video language: ${detectedLang}`)
       
       // Try direct URL method with detected language
       const directSubtitles = await getSubtitlesDirectly(videoId, detectedLang)
       if (directSubtitles) {
         attemptLogs.push('✓ Success with direct URL method!')
+        logSuccess('Direct URL', 'Successfully extracted transcript', { textLength: directSubtitles.length, language: detectedLang })
         console.log('Transcript extraction attempts:', attemptLogs)
         return { text: directSubtitles }
       }
       
       // If detected language failed, try English as fallback
       if (detectedLang !== 'en') {
+        logInfo('Direct URL', 'Trying English as fallback language')
         const englishSubtitles = await getSubtitlesDirectly(videoId, 'en')
         if (englishSubtitles) {
           attemptLogs.push('✓ Success with direct URL method (English fallback)!')
+          logSuccess('Direct URL', 'Successfully extracted transcript with English fallback', { textLength: englishSubtitles.length })
           console.log('Transcript extraction attempts:', attemptLogs)
           return { text: englishSubtitles }
         }
@@ -101,28 +122,34 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
       const errMsg = e instanceof Error ? e.message : 'Unknown error'
       errors.push(`Direct URL: ${errMsg}`)
       attemptLogs.push(`✗ Direct URL method failed: ${errMsg}`)
+      logError('Direct URL', `Failed with error: ${errMsg}`, { error: e })
     }
 
     // Fallback to external services
     attemptLogs.push('Attempting external transcript services...')
+    logStart('External Services', 'Attempting to extract transcript via external services')
     try {
       const externalResult = await fetchTranscriptExternal(videoId)
       if (externalResult.success && externalResult.text) {
         attemptLogs.push(`✓ Success with external service: ${externalResult.method}`)
+        logSuccess('External Services', `Successfully extracted transcript via ${externalResult.method}`, { textLength: externalResult.text.length, method: externalResult.method })
         console.log('Transcript extraction attempts:', attemptLogs)
         return { text: externalResult.text }
       } else {
         const errMsg = externalResult.error || 'No transcript found'
         errors.push(`External services: ${errMsg}`)
         attemptLogs.push(`✗ External services failed: ${errMsg}`)
+        logError('External Services', `Failed: ${errMsg}`, { error: externalResult.error })
       }
     } catch (e) {
       const errMsg = e instanceof Error ? e.message : 'Unknown error'
       errors.push(`External services: ${errMsg}`)
       attemptLogs.push(`✗ External services failed: ${errMsg}`)
+      logError('External Services', `Failed with error: ${errMsg}`, { error: e })
     }
 
     // Detailed error message with all attempts
+    const debugReport = getDebugReport()
     const detailedError = [
       'Failed to extract transcript after trying all methods.',
       '',
@@ -136,9 +163,13 @@ export async function getYouTubeTranscript(videoId: string, includeTimestamps: b
       'Video URL: https://www.youtube.com/watch?v=' + videoId,
       '',
       'Make sure the video has captions/subtitles enabled.',
-      'Some videos may have region-restricted captions or require authentication.'
+      'Some videos may have region-restricted captions or require authentication.',
+      '',
+      '=== Debug Report ===',
+      debugReport
     ].join('\n')
     
+    logError('getYouTubeTranscript', 'All extraction methods failed', { videoId, errors })
     throw new Error(detailedError)
   } catch (error) {
     console.error('Error fetching transcript:', error)

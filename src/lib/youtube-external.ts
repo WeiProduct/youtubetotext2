@@ -1,5 +1,6 @@
 // External service fallback for YouTube transcript extraction
 import axios from 'axios'
+import { logStart, logSuccess, logError, logInfo } from './debug-logger'
 
 interface ExternalTranscriptService {
   name: string
@@ -10,6 +11,7 @@ interface ExternalTranscriptService {
 async function fetchFromDownSub(videoId: string): Promise<string | null> {
   try {
     console.log('Trying DownSub service...')
+    logInfo('DownSub', 'Attempting to fetch transcript from DownSub service')
     const response = await axios.get(
       `https://downsub.com/?url=https://www.youtube.com/watch?v=${videoId}`,
       {
@@ -33,11 +35,14 @@ async function fetchFromDownSub(videoId: string): Promise<string | null> {
         .replace(/\n{2,}/g, ' ')
         .trim()
       
+      logSuccess('DownSub', 'Successfully extracted transcript', { textLength: text.length })
       return text
     }
+    logError('DownSub', 'No subtitle URLs found in response')
     return null
   } catch (error) {
     console.error('DownSub failed:', error)
+    logError('DownSub', 'Failed to fetch transcript', { error })
     return null
   }
 }
@@ -46,6 +51,7 @@ async function fetchFromDownSub(videoId: string): Promise<string | null> {
 async function fetchFromSaveSubs(videoId: string): Promise<string | null> {
   try {
     console.log('Trying SaveSubs service...')
+    logInfo('SaveSubs', 'Attempting to fetch transcript from SaveSubs service')
     const response = await axios.post(
       'https://savesubs.com/action/extract',
       `url=https://www.youtube.com/watch?v=${videoId}`,
@@ -65,12 +71,15 @@ async function fetchFromSaveSubs(videoId: string): Promise<string | null> {
       
       if (englishSub && englishSub.url) {
         const subResponse = await axios.get(englishSub.url)
+        logSuccess('SaveSubs', 'Successfully extracted transcript', { textLength: subResponse.data?.length })
         return subResponse.data
       }
+      logError('SaveSubs', 'No English subtitles found')
     }
     return null
   } catch (error) {
     console.error('SaveSubs failed:', error)
+    logError('SaveSubs', 'Failed to fetch transcript', { error })
     return null
   }
 }
@@ -78,11 +87,14 @@ async function fetchFromSaveSubs(videoId: string): Promise<string | null> {
 // Method 3: Using YouTube's official oEmbed API to check if video exists
 async function checkVideoExists(videoId: string): Promise<boolean> {
   try {
+    logInfo('checkVideoExists', `Checking if video ${videoId} exists`)
     const response = await axios.get(
       `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
     )
+    logInfo('checkVideoExists', 'Video exists', { status: response.status })
     return response.status === 200
   } catch {
+    logError('checkVideoExists', 'Video not found or is private')
     return false
   }
 }
@@ -91,6 +103,7 @@ async function checkVideoExists(videoId: string): Promise<boolean> {
 async function fetchDirectSubtitleUrl(videoId: string): Promise<string | null> {
   try {
     console.log('Trying direct subtitle URL...')
+    logInfo('Direct Subtitle URL', 'Attempting to fetch transcript from direct YouTube URLs')
     // Common subtitle URL patterns
     const subtitleUrls = [
       `https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&fmt=srv3`,
@@ -117,6 +130,7 @@ async function fetchDirectSubtitleUrl(videoId: string): Promise<string | null> {
             .trim()
           
           if (text.length > 0) {
+            logSuccess('Direct Subtitle URL', `Successfully extracted transcript from ${url}`, { textLength: text.length })
             return text
           }
         }
@@ -125,9 +139,11 @@ async function fetchDirectSubtitleUrl(videoId: string): Promise<string | null> {
         continue
       }
     }
+    logError('Direct Subtitle URL', 'All direct URLs failed')
     return null
   } catch (error) {
     console.error('Direct subtitle URL failed:', error)
+    logError('Direct Subtitle URL', 'Failed to fetch transcript', { error })
     return null
   }
 }
@@ -140,6 +156,7 @@ export async function fetchTranscriptExternal(videoId: string): Promise<{
   error?: string
 }> {
   console.log(`Attempting external transcript extraction for video: ${videoId}`)
+  logStart('External Services', `Starting external transcript extraction for video: ${videoId}`)
   
   // First check if video exists
   const videoExists = await checkVideoExists(videoId)
@@ -159,9 +176,14 @@ export async function fetchTranscriptExternal(videoId: string): Promise<{
   
   for (const service of services) {
     try {
+      logInfo('External Services', `Trying ${service.name}`)
       const transcript = await service.fetchTranscript(videoId)
       if (transcript && transcript.length > 0) {
         console.log(`Success with ${service.name}!`)
+        logSuccess('External Services', `Successfully extracted transcript with ${service.name}`, { 
+          method: service.name, 
+          textLength: transcript.length 
+        })
         return {
           success: true,
           text: transcript,
@@ -170,9 +192,11 @@ export async function fetchTranscriptExternal(videoId: string): Promise<{
       }
     } catch (error) {
       console.error(`${service.name} error:`, error)
+      logError('External Services', `${service.name} failed`, { error })
     }
   }
   
+  logError('External Services', 'All external services failed to retrieve transcript')
   return {
     success: false,
     error: 'No external service could retrieve the transcript. The video may not have captions available.'

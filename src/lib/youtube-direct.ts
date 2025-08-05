@@ -1,5 +1,6 @@
 // Direct YouTube subtitle extraction using /api/timedtext endpoint
 // Based on successful implementation from AI录音笔记
+import { logStart, logSuccess, logError, logInfo } from './debug-logger'
 
 interface LanguageVariants {
   [key: string]: string[]
@@ -31,9 +32,11 @@ const LANGUAGE_VARIANTS: LanguageVariants = {
 
 export async function getSubtitlesDirectly(videoId: string, language: string = 'en'): Promise<string | null> {
   console.log(`[Direct] Attempting to fetch subtitles for video ${videoId} in language ${language}`)
+  logInfo('Direct URL', `Attempting to fetch subtitles for video ${videoId} in language ${language}`)
   
   // The direct URL approach doesn't work without proper parameters from InnerTube API
   // This method is now deprecated in favor of InnerTube API
+  logError('Direct URL', 'Method deprecated - requires parameters from InnerTube API')
   return null
 }
 
@@ -126,6 +129,7 @@ function processJSONSubtitles(content: string): string {
 // Auto-detect language from video page
 export async function detectVideoLanguage(videoId: string): Promise<string> {
   try {
+    logStart('detectVideoLanguage', `Detecting language for video: ${videoId}`)
     const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
@@ -133,23 +137,28 @@ export async function detectVideoLanguage(videoId: string): Promise<string> {
       }
     })
     
+    logInfo('detectVideoLanguage', 'YouTube page fetched', { status: response.status })
     const html = await response.text()
     
     // Try to find default audio language
     const audioLangMatch = html.match(/"defaultAudioTrackIndex":\d+,"audioTracks":\[{"captionTrackIndices":\[[^\]]*\],"defaultCaptionTrackIndex":\d+,"visibility":"UNKNOWN","hasDefaultTrack":true,"captionsInitialState":"CAPTIONS_INITIAL_STATE_OFF_RECOMMENDED","id":{"itag":\d+},"audioTrackId":"[^"]*\.([^"]+)"/)
     if (audioLangMatch) {
+      logSuccess('detectVideoLanguage', `Detected language from audio track: ${audioLangMatch[1]}`)
       return audioLangMatch[1]
     }
     
     // Try to find from caption tracks
     const captionMatch = html.match(/"captionTracks":\[{"baseUrl":"[^"]*","name":\{"simpleText":"[^"]*"\},"vssId":"[^"]*","languageCode":"([^"]+)"/)
     if (captionMatch) {
+      logSuccess('detectVideoLanguage', `Detected language from caption tracks: ${captionMatch[1]}`)
       return captionMatch[1]
     }
     
+    logInfo('detectVideoLanguage', 'No language detected, defaulting to English')
     return 'en' // Default to English
   } catch (error) {
     console.error('[Direct] Failed to detect language:', error)
+    logError('detectVideoLanguage', 'Failed to detect language', { error })
     return 'en'
   }
 }

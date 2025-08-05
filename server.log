@@ -532,3 +532,8 @@ Caption URL: https://www.youtube.com/api/timedtext?v=_GMtx9EsIKU&ei=yXeRaP2fAoKR
 === INNERTUBE DEBUG SUCCESS ===
  POST /api/debug-innertube 200 in 1133ms
  ✓ Compiled in 113ms (397 modules)
+ ✓ Compiled in 335ms (229 modules)
+ ✓ Compiled in 452ms (246 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Restoring pack from /Users/weifu/Desktop/youtube转文字/Youtubetotext/.next/cache/webpack/client-development.pack.gz failed: TypeError: Cannot read properties of undefined (reading 'hasStartTime')
+ ✓ Compiled in 354ms (475 modules)
+ ✓ Compiled in 127ms (475 modules)

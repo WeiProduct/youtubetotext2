@@ -1,5 +1,6 @@
 // YouTube InnerTube API - Direct API access
 import axios from 'axios'
+import { logStart, logSuccess, logError, logInfo } from './debug-logger'
 
 const INNERTUBE_API_KEY = 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8' // Public API key from YouTube
 const INNERTUBE_CLIENT_VERSION = '2.20240726.00.00' // Updated version
@@ -90,6 +91,7 @@ async function makeInnerTubeRequest(endpoint: string, body: any, client = INNERT
 export async function getTranscriptViaInnerTube(videoId: string): Promise<string | null> {
   try {
     console.log('Attempting InnerTube API extraction...')
+    logInfo('InnerTube', `Starting extraction for video: ${videoId}`, { client: 'WEB_EMBEDDED_PLAYER' })
     
     // First, get video info
     const videoInfo = await makeInnerTubeRequest('player', {
@@ -98,16 +100,34 @@ export async function getTranscriptViaInnerTube(videoId: string): Promise<string
       racyCheckOk: true
     })
     
+    // Log the response status
+    logInfo('InnerTube', 'Received response from player endpoint', {
+      hasVideoInfo: !!videoInfo,
+      playabilityStatus: videoInfo?.playabilityStatus?.status,
+      hasCaptions: !!videoInfo?.captions
+    })
+    
     if (!videoInfo || !videoInfo.captions) {
       console.log('No captions found in video info')
+      logError('InnerTube', 'No captions object in response', {
+        hasVideoInfo: !!videoInfo,
+        playabilityStatus: videoInfo?.playabilityStatus
+      })
       return null
     }
     
     const captionTracks = videoInfo.captions?.playerCaptionsTracklistRenderer?.captionTracks
     if (!captionTracks || captionTracks.length === 0) {
       console.log('No caption tracks available')
+      logError('InnerTube', 'No caption tracks in captions object', {
+        captionsStructure: Object.keys(videoInfo.captions || {})
+      })
       return null
     }
+    
+    logInfo('InnerTube', `Found ${captionTracks.length} caption tracks`, {
+      tracks: captionTracks.map((t: any) => ({ lang: t.languageCode, name: t.name?.simpleText }))
+    })
     
     // Find English caption track
     const englishTrack = captionTracks.find((track: any) => 
@@ -118,44 +138,83 @@ export async function getTranscriptViaInnerTube(videoId: string): Promise<string
     
     if (!englishTrack || !englishTrack.baseUrl) {
       console.log('No suitable caption track found')
+      logError('InnerTube', 'No suitable caption track with baseUrl', {
+        availableTracks: captionTracks.map((t: any) => t.languageCode)
+      })
       return null
     }
     
     console.log(`Found caption track: ${englishTrack.languageCode}`)
+    logInfo('InnerTube', `Selected caption track: ${englishTrack.languageCode}`, {
+      hasBaseUrl: !!englishTrack.baseUrl,
+      trackName: englishTrack.name?.simpleText
+    })
     
     // Fetch the captions
+    logInfo('InnerTube', 'Fetching caption content from baseUrl')
     const captionResponse = await axios.get(englishTrack.baseUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
       }
     })
     
+    logInfo('InnerTube', 'Caption content fetched', {
+      status: captionResponse.status,
+      contentLength: captionResponse.data?.length,
+      contentType: captionResponse.headers['content-type']
+    })
+    
     // Parse the caption XML
     const captionText = parseCaptionXML(captionResponse.data)
+    if (captionText) {
+      logSuccess('InnerTube', 'Successfully extracted and parsed captions', {
+        textLength: captionText.length,
+        client: 'WEB_EMBEDDED_PLAYER'
+      })
+    }
     return captionText
     
   } catch (error) {
     console.error('InnerTube extraction failed:', error)
+    logError('InnerTube', 'WEB_EMBEDDED_PLAYER client failed', { error })
     
     // Try Android client as fallback
     try {
       console.log('Trying Android client...')
+      logInfo('InnerTube', 'Attempting Android client as fallback')
       const videoInfo = await makeInnerTubeRequest('player', {
         videoId: videoId,
         contentCheckOk: true,
         racyCheckOk: true
       }, INNERTUBE_CLIENTS.ANDROID)
       
+      logInfo('InnerTube', 'Android client response received', {
+        hasVideoInfo: !!videoInfo,
+        playabilityStatus: videoInfo?.playabilityStatus?.status,
+        hasCaptions: !!videoInfo?.captions
+      })
+      
       const captionTracks = videoInfo.captions?.playerCaptionsTracklistRenderer?.captionTracks
       if (captionTracks && captionTracks.length > 0) {
+        logInfo('InnerTube', `Android client found ${captionTracks.length} caption tracks`)
         const track = captionTracks[0]
         const captionResponse = await axios.get(track.baseUrl)
-        return parseCaptionXML(captionResponse.data)
+        const result = parseCaptionXML(captionResponse.data)
+        if (result) {
+          logSuccess('InnerTube', 'Successfully extracted captions via Android client', {
+            textLength: result.length
+          })
+        }
+        return result
+      } else {
+        logError('InnerTube', 'Android client found no caption tracks')
       }
     } catch (androidError) {
       console.error('Android client also failed:', androidError)
+      logError('InnerTube', 'Android client also failed', { error: androidError })
     }
     
+    logError('InnerTube', 'All InnerTube clients failed to extract captions')
     return null
   }
 }

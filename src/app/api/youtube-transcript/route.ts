@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { extractVideoId, getYouTubeTranscript } from '@/lib/youtube-transcript'
+import { debugLogger } from '@/lib/debug-logger'
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now()
@@ -46,13 +47,18 @@ export async function POST(request: NextRequest) {
     
     debugInfo.duration = Date.now() - startTime
     
+    // Add debug logs to response
+    const debugLogs = debugLogger.getLogs()
+    debugInfo.debugLogs = debugLogs
+    
     return NextResponse.json({
       success: true,
       videoId,
       transcript: transcriptResult.text,
       segments: transcriptResult.segments,
       url,
-      debug: debugInfo // Always include debug info for now
+      debug: debugInfo, // Always include debug info for now
+      debugLogs: debugLogs // Include detailed debug logs
     })
   } catch (error) {
     console.error('Error processing YouTube URL:', error)
@@ -60,11 +66,16 @@ export async function POST(request: NextRequest) {
     debugInfo.errorStack = error instanceof Error ? error.stack : undefined
     debugInfo.duration = Date.now() - startTime
     
+    // Add debug logs to error response
+    const debugLogs = debugLogger.getLogs()
+    debugInfo.debugLogs = debugLogs
+    
     return NextResponse.json(
       { 
         error: error instanceof Error ? error.message : 'Failed to extract transcript',
         videoId: videoId || undefined,
-        debug: debugInfo // Always include debug info for now
+        debug: debugInfo, // Always include debug info for now
+        debugLogs: debugLogs // Include detailed debug logs in error response
       },
       { status: 500 }
     )
