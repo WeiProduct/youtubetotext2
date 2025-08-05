@@ -1,0 +1,534 @@
+
+> youtubetotext@2.2.0 dev
+> next dev
+
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1219ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.1s (484 modules)
+ GET / 200 in 2194ms
+ ✓ Compiled in 105ms (246 modules)
+ ✓ Compiled /api/health in 110ms (259 modules)
+ GET /api/health 200 in 140ms
+ GET / 200 in 85ms
+ ✓ Compiled /api/youtube-transcript in 432ms (398 modules)
+Attempting InnerTube API extraction...
+Found caption track: en
+Transcript extraction attempts: [
+  'Attempting YouTube InnerTube API...',
+  '✓ Success with InnerTube API'
+]
+ POST /api/youtube-transcript 200 in 973ms
+ GET / 200 in 87ms
+Attempting InnerTube API extraction...
+Found caption track: en
+Transcript extraction attempts: [
+  'Attempting YouTube InnerTube API...',
+  '✓ Success with InnerTube API'
+]
+ POST /api/youtube-transcript 200 in 554ms
+Attempting InnerTube API extraction...
+Found caption track: en
+Transcript extraction attempts: [
+  'Attempting YouTube InnerTube API...',
+  '✓ Success with InnerTube API'
+]
+ POST /api/youtube-transcript 200 in 629ms
+ ✓ Compiled in 600ms (475 modules)
+ ✓ Compiled in 75ms (246 modules)
+ ✓ Compiled /api/health in 52ms (259 modules)
+ GET /api/health 200 in 101ms
+ GET / 200 in 61ms
+ ✓ Compiled /api/youtube-transcript in 64ms (398 modules)
+Attempting InnerTube API extraction...
+Found caption track: en
+Transcript extraction attempts: [
+  'Attempting YouTube InnerTube API...',
+  '✓ Success with InnerTube API'
+]
+ POST /api/youtube-transcript 200 in 784ms
+ ✓ Compiled in 556ms (229 modules)
+ ✓ Compiled in 126ms (246 modules)
+ ✓ Compiled in 50ms (461 modules)
+ ✓ Compiled /api/youtube-transcript in 205ms (396 modules)
+[InnerTube] Starting extraction for video: _GMtx9EsIKU
+[InnerTube] Trying WEB_EMBEDDED client...
+[InnerTube] Error with WEB_EMBEDDED client: ReferenceError: videoId is not defined
+    at makeInnerTubeRequest (webpack-internal:///(rsc)/./src/lib/youtube-innertube-enhanced.ts:75:75)
+    at getTranscriptViaInnerTube (webpack-internal:///(rsc)/./src/lib/youtube-innertube-enhanced.ts:128:37)
+    at getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:23:133)
+    at POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:117)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+[InnerTube] Trying ANDROID client...
+[InnerTube] Error with ANDROID client: ReferenceError: videoId is not defined
+    at makeInnerTubeRequest (webpack-internal:///(rsc)/./src/lib/youtube-innertube-enhanced.ts:75:75)
+    at getTranscriptViaInnerTube (webpack-internal:///(rsc)/./src/lib/youtube-innertube-enhanced.ts:128:37)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:23:41)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:34)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+[InnerTube] Trying WEB client...
+[InnerTube] Error with WEB client: ReferenceError: videoId is not defined
+    at makeInnerTubeRequest (webpack-internal:///(rsc)/./src/lib/youtube-innertube-enhanced.ts:75:75)
+    at getTranscriptViaInnerTube (webpack-internal:///(rsc)/./src/lib/youtube-innertube-enhanced.ts:128:37)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:23:41)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:34)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+[InnerTube] All extraction attempts failed
+Alternative method: Attempting to extract captions for video _GMtx9EsIKU
+Video info from noembed: We Made Claude Code Build Lovable in 75 Minutes (With No Code)
+Video info retrieved: We Made Claude Code Build Lovable in 75 Minutes (With No Code)
+Found 1 caption tracks
+Found 1 caption tracks
+Using caption track: en - English (auto-generated)
+Failed to fetch caption content: Error: Could not parse caption content
+    at fetchCaptionContent (webpack-internal:///(rsc)/./src/lib/youtube-api.ts:123:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async fetchWithAlternativeMethod (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:231:29)
+    at async getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:56:43)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:34)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+Alternative method failed: Error: Could not parse caption content
+    at fetchCaptionContent (webpack-internal:///(rsc)/./src/lib/youtube-api.ts:123:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async fetchWithAlternativeMethod (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:231:29)
+    at async getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:56:43)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:34)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+Error details: Could not parse caption content
+Stack trace: Error: Could not parse caption content
+    at fetchCaptionContent (webpack-internal:///(rsc)/./src/lib/youtube-api.ts:123:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async fetchWithAlternativeMethod (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:231:29)
+    at async getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:56:43)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:34)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+[Direct] Attempting to fetch subtitles for video _GMtx9EsIKU in language en
+Attempting external transcript extraction for video: _GMtx9EsIKU
+Trying direct subtitle URL...
+Trying DownSub service...
+Trying SaveSubs service...
+Error fetching transcript: Error: Failed to extract transcript after trying all methods.
+
+Attempt details:
+  Attempting YouTube InnerTube API...
+  ✗ InnerTube API returned no transcript
+  Attempting youtube-transcript library...
+  Attempting alternative scraping method...
+  ✗ Alternative method returned no transcript
+  Attempting direct URL subtitle extraction...
+  Detected language: en
+  Attempting external transcript services...
+  ✗ External services failed: No external service could retrieve the transcript. The video may not have captions available.
+
+Errors encountered:
+  • InnerTube API: No transcript found (tried multiple clients)
+  • Alternative method: No transcript found
+  • External services: No external service could retrieve the transcript. The video may not have captions available.
+
+Video ID: _GMtx9EsIKU
+Video URL: https://www.youtube.com/watch?v=_GMtx9EsIKU
+
+Make sure the video has captions/subtitles enabled.
+Some videos may have region-restricted captions or require authentication.
+    at getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:139:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:34)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+Attempt history: [
+  'Attempting YouTube InnerTube API...',
+  '✗ InnerTube API returned no transcript',
+  'Attempting youtube-transcript library...',
+  'Attempting alternative scraping method...',
+  '✗ Alternative method returned no transcript',
+  'Attempting direct URL subtitle extraction...',
+  'Detected language: en',
+  'Attempting external transcript services...',
+  '✗ External services failed: No external service could retrieve the transcript. The video may not have captions available.'
+]
+Error processing YouTube URL: Error: Failed to extract transcript after trying all methods.
+
+Attempt details:
+  Attempting YouTube InnerTube API...
+  ✗ InnerTube API returned no transcript
+  Attempting youtube-transcript library...
+  Attempting alternative scraping method...
+  ✗ Alternative method returned no transcript
+  Attempting direct URL subtitle extraction...
+  Detected language: en
+  Attempting external transcript services...
+  ✗ External services failed: No external service could retrieve the transcript. The video may not have captions available.
+
+Errors encountered:
+  • InnerTube API: No transcript found (tried multiple clients)
+  • Alternative method: No transcript found
+  • External services: No external service could retrieve the transcript. The video may not have captions available.
+
+Video ID: _GMtx9EsIKU
+Video URL: https://www.youtube.com/watch?v=_GMtx9EsIKU
+
+Make sure the video has captions/subtitles enabled.
+Some videos may have region-restricted captions or require authentication.
+    at getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:139:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:34)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+ POST /api/youtube-transcript 500 in 5443ms
+ ✓ Compiled in 107ms (396 modules)
+Attempting InnerTube API extraction...
+Found caption track: en
+Transcript extraction attempts: [
+  'Attempting YouTube InnerTube API...',
+  '✓ Success with InnerTube API'
+]
+ POST /api/youtube-transcript 200 in 633ms
+ ✓ Compiled in 906ms (628 modules)
+ ✓ Compiled in 682ms (475 modules)
+ ✓ Compiled in 143ms (475 modules)
+ ✓ Compiled in 104ms (475 modules)
+ GET / 200 in 89ms
+ ✓ Compiled in 275ms (475 modules)
+ ✓ Compiled in 66ms (246 modules)
+ ✓ Compiled /api/health in 120ms (259 modules)
+ GET /api/health 200 in 157ms
+ GET / 200 in 39ms
+ ✓ Compiled in 240ms (475 modules)
+ GET / 200 in 52ms
+ ✓ Compiled in 202ms (246 modules)
+ ✓ Compiled in 97ms (461 modules)
+ ✓ Compiled /api/debug-innertube in 231ms (397 modules)
+=== DEBUG ENDPOINT START ===
+Processing video: _GMtx9EsIKU
+=== INNERTUBE DEBUG START ===
+Video ID: _GMtx9EsIKU
+Environment: {
+  NODE_ENV: 'development',
+  VERCEL: undefined,
+  VERCEL_ENV: undefined,
+  VERCEL_URL: undefined,
+  VERCEL_REGION: undefined
+}
+
+--- Trying Standard Web Client ---
+Request URL: https://www.youtube.com/youtubei/v1/player?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8&prettyPrint=false
+Request Headers: {
+  "Content-Type": "application/json",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  "Accept": "*/*",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Accept-Encoding": "gzip, deflate, br",
+  "Origin": "https://www.youtube.com",
+  "Referer": "https://www.youtube.com/",
+  "X-YouTube-Client-Name": "1",
+  "X-YouTube-Client-Version": "2.20240726.00.00",
+  "X-Goog-Visitor-Id": "CgtmelQ4Y2k3cmlqVSiAt4WoBg%3D%3D",
+  "X-Youtube-Bootstrap-Logged-In": "false",
+  "X-Youtube-Device": "cbr=Chrome&cbrver=120.0.0.0&ceng=WebKit&cengver=537.36&cos=Windows&cosver=10.0",
+  "X-Youtube-Page-CL": "677741211",
+  "X-Youtube-Page-Label": "youtube.desktop.web_20240729_08_RC00",
+  "X-Origin": "https://www.youtube.com",
+  "Sec-Fetch-Site": "same-origin",
+  "Sec-Fetch-Mode": "same-origin",
+  "Sec-Fetch-Dest": "empty",
+  "Sec-Ch-Ua": "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"",
+  "Sec-Ch-Ua-Mobile": "?0",
+  "Sec-Ch-Ua-Platform": "\"Windows\""
+}
+Request Body: {
+  "videoId": "_GMtx9EsIKU",
+  "context": {
+    "client": {
+      "clientName": "WEB",
+      "clientVersion": "2.20240726.00.00",
+      "clientScreen": "WATCH",
+      "platform": "DESKTOP",
+      "hl": "en",
+      "gl": "US",
+      "timeZone": "UTC",
+      "utcOffsetMinutes": 0,
+      "userInterfaceTheme": "USER_INTERFACE_THEME_LIGHT",
+      "browserName": "Chrome",
+      "browserVersion": "120.0.0.0",
+      "acceptHeader": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+      "deviceMake": "",
+      "deviceModel": "",
+      "originalUrl": "https://www.youtube.com/watch?v=_GMtx9EsIKU",
+      "screenDensityFloat": 1,
+      "screenHeightPoints": 1080,
+      "screenWidthPoints": 1920
+    },
+    "user": {
+      "lockedSafetyMode": false
+    },
+    "request": {
+      "useSsl": true,
+      "consistencyTokenJars": [],
+      "internalExperimentFlags": []
+    },
+    "clickTracking": {
+      "clickTrackingParams": ""
+    },
+    "adSignalsInfo": {
+      "params": []
+    }
+  },
+  "playbackContext": {
+    "contentPlaybackContext": {
+      "currentUrl": "https://www.youtube.com/watch?v=_GMtx9EsIKU",
+      "vis": 0,
+      "splay": false,
+      "autoCaptionsDefaultOn": false,
+      "autonavState": "STATE_NONE",
+      "html5Preference": "HTML5_PREF_WANTS",
+      "lactMilliseconds": "-1",
+      "referer": "https://www.youtube.com/",
+      "signatureTimestamp": 19950,
+      "autoplay": true,
+      "autonav": true
+    }
+  },
+  "attestation": {
+    "playerAttestationRenderer": {
+      "challenge": "a=4&a2=1&b=VOLigXAR-30&c=1607634673&d=u&e=_GMtx9EsIKU",
+      "botguardData": {
+        "program": "oSl4AX0JAooBAb5EB5cVTdQ4IyBpqAW6fKeFtQP9SP+5kOt+cZcMSZU4XhOw3r5MdfKzBLyPqHfKJdOs8B4f9n6sW7BzSMGC0+5WePLCUhnfTtlLKcT7eDU6gkJXmSg5MyEBR7yT1+k="
+      }
+    }
+  },
+  "params": "CgIQBg==",
+  "contentCheckOk": true,
+  "racyCheckOk": true,
+  "captionsRequested": true
+}
+Response Status: 200
+Response Headers: {
+  "content-type": "application/json; charset=UTF-8",
+  "vary": "Origin, X-Origin, Referer",
+  "date": "Tue, 05 Aug 2025 03:17:28 GMT",
+  "server": "scaffolding on HTTPServer2",
+  "content-length": "2070",
+  "x-xss-protection": "0",
+  "x-frame-options": "SAMEORIGIN",
+  "x-content-type-options": "nosniff",
+  "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+}
+Playability Status: ERROR
+Playability Reason: This video is unavailable
+Error Screen: {
+  playerErrorMessageRenderer: {
+    subreason: { runs: [Array] },
+    learnMore: { runs: [Array] },
+    reason: { runs: [Array] },
+    thumbnail: { thumbnails: [Array] },
+    icon: { iconType: 'ERROR_OUTLINE' }
+  }
+}
+
+--- Trying Embedded Player ---
+Request URL: https://www.youtube.com/youtubei/v1/player?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8&prettyPrint=false
+Request Headers: {
+  "Content-Type": "application/json",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  "Accept": "*/*",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Accept-Encoding": "gzip, deflate, br",
+  "Origin": "https://www.youtube.com",
+  "Referer": "https://www.youtube.com/",
+  "X-YouTube-Client-Name": "1",
+  "X-YouTube-Client-Version": "2.20240726.00.00",
+  "X-Goog-Visitor-Id": "CgtmelQ4Y2k3cmlqVSiAt4WoBg%3D%3D",
+  "X-Youtube-Bootstrap-Logged-In": "false",
+  "X-Youtube-Device": "cbr=Chrome&cbrver=120.0.0.0&ceng=WebKit&cengver=537.36&cos=Windows&cosver=10.0",
+  "X-Youtube-Page-CL": "677741211",
+  "X-Youtube-Page-Label": "youtube.desktop.web_20240729_08_RC00",
+  "X-Origin": "https://www.youtube.com",
+  "Sec-Fetch-Site": "same-origin",
+  "Sec-Fetch-Mode": "same-origin",
+  "Sec-Fetch-Dest": "empty",
+  "Sec-Ch-Ua": "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"",
+  "Sec-Ch-Ua-Mobile": "?0",
+  "Sec-Ch-Ua-Platform": "\"Windows\""
+}
+Request Body: {
+  "videoId": "_GMtx9EsIKU",
+  "context": {
+    "client": {
+      "clientName": "WEB_EMBEDDED_PLAYER",
+      "clientVersion": "2.20240726.00.00",
+      "clientScreen": "EMBED",
+      "platform": "DESKTOP",
+      "hl": "en",
+      "gl": "US"
+    }
+  },
+  "playbackContext": {
+    "contentPlaybackContext": {
+      "signatureTimestamp": 19950
+    }
+  },
+  "contentCheckOk": true,
+  "racyCheckOk": true
+}
+Response Status: 200
+Response Headers: {
+  "content-type": "application/json; charset=UTF-8",
+  "vary": "Origin, X-Origin, Referer",
+  "date": "Tue, 05 Aug 2025 03:17:29 GMT",
+  "server": "scaffolding on HTTPServer2",
+  "content-length": "46031",
+  "x-xss-protection": "0",
+  "x-frame-options": "SAMEORIGIN",
+  "x-content-type-options": "nosniff",
+  "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+}
+Playability Status: OK
+Captions Available: true
+Found 1 caption tracks
+Track 1: en - Auto-generated
+Selected track: en
+Caption URL: https://www.youtube.com/api/timedtext?v=_GMtx9EsIKU&ei=yXeRaP2fAoKRsfIPgt2RwQI&caps=asr&opi=112496729&xoaf=4&hl=en&ip=0.0.0.0&ipbits=0&expire=1754389049&sparams=ip,ipbits,expire,v,ei,caps,opi,xoaf&signature=314ACBC50C8B6C8105A9F9E879683622C68A7E90.15CD42CF1A1B74D71A8141D20EE801CE42C01533&key=yt8&kind=asr&lang=en&variant=punctuated
+=== INNERTUBE DEBUG SUCCESS ===
+ POST /api/debug-innertube 200 in 1133ms
+ ✓ Compiled in 113ms (397 modules)

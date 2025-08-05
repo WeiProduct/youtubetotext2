@@ -61,9 +61,29 @@ export default function DebugPanel() {
               const allLogs = logs.map(log => {
                 const type = log.type.toUpperCase()
                 const time = log.timestamp.toLocaleTimeString()
-                const details = log.details ? `\nDetails: ${typeof log.details === 'object' ? JSON.stringify(log.details, null, 2) : log.details}` : ''
-                return `[${type}] ${time} - ${log.message}${details}`
-              }).join('\n\n')
+                const date = log.timestamp.toLocaleDateString()
+                const fullTimestamp = log.timestamp.toISOString()
+                
+                let logText = `[${type}] ${date} ${time}\n`
+                logText += `Timestamp: ${fullTimestamp}\n`
+                logText += `Message: ${log.message}\n`
+                
+                if (log.details) {
+                  logText += `Details:\n`
+                  if (typeof log.details === 'object') {
+                    // Check if it's an Error object with stack
+                    if (log.details.stack) {
+                      logText += `Stack Trace:\n${log.details.stack}\n`
+                    }
+                    // Include all properties
+                    logText += JSON.stringify(log.details, null, 2)
+                  } else {
+                    logText += log.details
+                  }
+                }
+                
+                return logText
+              }).join('\n' + '='.repeat(80) + '\n\n')
               
               navigator.clipboard.writeText(allLogs)
               setCopiedId('all')
@@ -155,7 +175,30 @@ export default function DebugPanel() {
                   </div>
                   <button
                     onClick={() => {
-                      const logText = `[${log.type.toUpperCase()}] ${log.timestamp.toLocaleTimeString()} - ${log.message}${log.details ? `\nDetails: ${typeof log.details === 'object' ? JSON.stringify(log.details, null, 2) : log.details}` : ''}`
+                      const type = log.type.toUpperCase()
+                      const time = log.timestamp.toLocaleTimeString()
+                      const date = log.timestamp.toLocaleDateString()
+                      const fullTimestamp = log.timestamp.toISOString()
+                      
+                      let logText = `[${type}] ${date} ${time}\n`
+                      logText += `Timestamp: ${fullTimestamp}\n`
+                      logText += `Message: ${log.message}\n`
+                      logText += `Log ID: ${log.id}\n`
+                      
+                      if (log.details) {
+                        logText += `\nDetails:\n`
+                        if (typeof log.details === 'object') {
+                          // Check if it's an Error object with stack
+                          if (log.details.stack) {
+                            logText += `Stack Trace:\n${log.details.stack}\n\n`
+                          }
+                          // Include all properties
+                          logText += JSON.stringify(log.details, null, 2)
+                        } else {
+                          logText += log.details
+                        }
+                      }
+                      
                       navigator.clipboard.writeText(logText)
                       setCopiedId(log.id)
                       setTimeout(() => setCopiedId(null), 2000)

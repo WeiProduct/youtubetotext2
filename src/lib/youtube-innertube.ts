@@ -11,6 +11,13 @@ interface InnerTubeConfig {
 }
 
 const INNERTUBE_CLIENTS = {
+  WEB_EMBEDDED: {
+    key: INNERTUBE_API_KEY,
+    clientName: 'WEB_EMBEDDED_PLAYER',
+    clientVersion: INNERTUBE_CLIENT_VERSION,
+    clientScreen: 'EMBED',
+    platform: 'DESKTOP'
+  },
   WEB: {
     key: INNERTUBE_API_KEY,
     clientName: 'WEB',
@@ -27,7 +34,7 @@ const INNERTUBE_CLIENTS = {
   }
 }
 
-async function makeInnerTubeRequest(endpoint: string, body: any, client = INNERTUBE_CLIENTS.WEB) {
+async function makeInnerTubeRequest(endpoint: string, body: any, client = INNERTUBE_CLIENTS.WEB_EMBEDDED) {
   const url = `https://www.youtube.com/youtubei/v1/${endpoint}?key=${client.key}`
   
   const payload = {
@@ -66,7 +73,7 @@ async function makeInnerTubeRequest(endpoint: string, body: any, client = INNERT
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Origin': 'https://www.youtube.com',
         'Referer': 'https://www.youtube.com',
-        'X-YouTube-Client-Name': client.clientName === 'WEB' ? '1' : '3',
+        'X-YouTube-Client-Name': client.clientName === 'WEB_EMBEDDED_PLAYER' ? '56' : client.clientName === 'WEB' ? '1' : '3',
         'X-YouTube-Client-Version': client.clientVersion,
         'Accept': 'application/json',
         'Accept-Language': 'en-US,en;q=0.9'

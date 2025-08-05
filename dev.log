@@ -1,0 +1,165 @@
+
+> youtubetotext@2.2.0 dev
+> next dev
+
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1135ms
+ ✓ Compiled /api/youtube-transcript in 370ms (191 modules)
+Attempting InnerTube API extraction...
+Found caption track: en
+Transcript extraction attempts: [
+  'Attempting YouTube InnerTube API...',
+  '✓ Success with InnerTube API'
+]
+ POST /api/youtube-transcript 200 in 783ms
+ ✓ Compiled in 78ms (191 modules)
+Attempting InnerTube API extraction...
+Found caption track: en
+Transcript extraction attempts: [
+  'Attempting YouTube InnerTube API...',
+  '✓ Success with InnerTube API'
+]
+ POST /api/youtube-transcript 200 in 301ms
+Attempting InnerTube API extraction...
+Found caption track: en
+Transcript extraction attempts: [
+  'Attempting YouTube InnerTube API...',
+  '✓ Success with InnerTube API'
+]
+ POST /api/youtube-transcript 200 in 201ms
+Attempting InnerTube API extraction...
+No captions found in video info
+Method 1 failed, trying alternative...
+Method 2 failed, trying any language...
+youtube-transcript library failed: YoutubeTranscriptDisabledError: [YoutubeTranscript] 🚨 Transcript is disabled on this video (BaW_jenozKc)
+    at YoutubeTranscript.eval (webpack-internal:///(rsc)/./node_modules/youtube-transcript/dist/youtube-transcript.esm.js:94:23)
+    at Generator.next (<anonymous>)
+    at fulfilled (webpack-internal:///(rsc)/./node_modules/youtube-transcript/dist/youtube-transcript.esm.js:29:58)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Error details: [YoutubeTranscript] 🚨 Transcript is disabled on this video (BaW_jenozKc)
+Alternative method: Attempting to extract captions for video BaW_jenozKc
+Video info from noembed: undefined
+Video info retrieved: undefined
+No caption tracks found
+[Direct] Attempting to fetch subtitles for video BaW_jenozKc in language en
+Attempting external transcript extraction for video: BaW_jenozKc
+Error fetching transcript: Error: Failed to extract transcript after trying all methods.
+
+Attempt details:
+  Attempting YouTube InnerTube API...
+  ✗ InnerTube API returned no transcript
+  Attempting youtube-transcript library...
+  Attempting alternative scraping method...
+  ✗ Alternative method returned no transcript
+  Attempting direct URL subtitle extraction...
+  Detected language: en
+  Attempting external transcript services...
+  ✗ External services failed: Video not found or is private
+
+Errors encountered:
+  • InnerTube API: No transcript found
+  • Alternative method: No transcript found
+  • External services: Video not found or is private
+
+Video ID: BaW_jenozKc
+Video URL: https://www.youtube.com/watch?v=BaW_jenozKc
+
+Make sure the video has captions/subtitles enabled.
+Some videos may have region-restricted captions or require authentication.
+    at getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:139:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:34)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+Attempt history: [
+  'Attempting YouTube InnerTube API...',
+  '✗ InnerTube API returned no transcript',
+  'Attempting youtube-transcript library...',
+  'Attempting alternative scraping method...',
+  '✗ Alternative method returned no transcript',
+  'Attempting direct URL subtitle extraction...',
+  'Detected language: en',
+  'Attempting external transcript services...',
+  '✗ External services failed: Video not found or is private'
+]
+Error processing YouTube URL: Error: Failed to extract transcript after trying all methods.
+
+Attempt details:
+  Attempting YouTube InnerTube API...
+  ✗ InnerTube API returned no transcript
+  Attempting youtube-transcript library...
+  Attempting alternative scraping method...
+  ✗ Alternative method returned no transcript
+  Attempting direct URL subtitle extraction...
+  Detected language: en
+  Attempting external transcript services...
+  ✗ External services failed: Video not found or is private
+
+Errors encountered:
+  • InnerTube API: No transcript found
+  • Alternative method: No transcript found
+  • External services: Video not found or is private
+
+Video ID: BaW_jenozKc
+Video URL: https://www.youtube.com/watch?v=BaW_jenozKc
+
+Make sure the video has captions/subtitles enabled.
+Some videos may have region-restricted captions or require authentication.
+    at getYouTubeTranscript (webpack-internal:///(rsc)/./src/lib/youtube-transcript.ts:139:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/youtube-transcript/route.ts:53:34)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:55778
+    at async eO.execute (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:46527)
+    at async eO.handle (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:57112)
+    at async doRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1352:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1574:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1482:28)
+    at async DevServer.renderPageComponent (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1908:24)
+    at async DevServer.renderToResponseImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/weifu/Desktop/youtube转文字/Youtubetotext/node_modules/next/dist/server/lib/start-server.js:141:13)
+ POST /api/youtube-transcript 500 in 1116ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1637ms (651 modules)
+ GET / 200 in 1759ms
+ ✓ Compiled in 109ms (246 modules)
+ ✓ Compiled /_not-found in 64ms (631 modules)
+ GET /apple-touch-icon-precomposed.png 404 in 101ms
+ GET /apple-touch-icon.png 404 in 12ms
+ GET / 200 in 16ms
+ GET / 200 in 204ms
+ GET /_next/static/css/app/layout.css?v=1754265544946 404 in 77ms
+ GET /_next/static/chunks/main-app.js?v=1754265544946 404 in 74ms
+ GET /_next/static/chunks/webpack.js?v=1754265544946 404 in 75ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 77ms
+ GET /_next/static/chunks/app/layout.js 404 in 77ms
+ GET /_next/static/chunks/app/page.js 404 in 74ms
+[?25h
