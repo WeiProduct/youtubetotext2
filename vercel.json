@@ -4,5 +4,19 @@
   "framework": "nextjs",
   "env": {
     "NODE_ENV": "production"
+  },
+  "functions": {
+    "src/app/api/youtube-transcript/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/debug-innertube/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/proxy/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/test-direct/route.ts": {
+      "maxDuration": 60
+    }
   }
 }

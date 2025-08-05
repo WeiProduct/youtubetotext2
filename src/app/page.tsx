@@ -52,12 +52,13 @@ export default function Home() {
       if (data.debugLogs && Array.isArray(data.debugLogs)) {
         console.log('=== Debug Logs from Extraction ===')
         data.debugLogs.forEach((log: any) => {
-          const emoji = {
+          const emojiMap: Record<string, string> = {
             start: '🔵',
             success: '✅',
             error: '❌',
             info: 'ℹ️'
-          }[log.status] || '📝'
+          }
+          const emoji = emojiMap[log.status] || '📝'
           console.log(`${emoji} [${log.method}] ${log.message}`, log.details || '')
         })
         console.log('=== End Debug Logs ===')
