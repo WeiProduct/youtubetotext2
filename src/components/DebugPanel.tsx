@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 export default function DebugPanel() {
   const { logs, clearLogs, isDebugVisible, toggleDebug } = useDebug()
   const [isExpanded, setIsExpanded] = useState(true)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   
   // Add keyboard shortcut (Ctrl/Cmd + D)
   useEffect(() => {
@@ -55,6 +56,27 @@ export default function DebugPanel() {
           <span className="text-xs text-gray-400">({logs.length} logs)</span>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              const allLogs = logs.map(log => {
+                const type = log.type.toUpperCase()
+                const time = log.timestamp.toLocaleTimeString()
+                const details = log.details ? `\nDetails: ${typeof log.details === 'object' ? JSON.stringify(log.details, null, 2) : log.details}` : ''
+                return `[${type}] ${time} - ${log.message}${details}`
+              }).join('\n\n')
+              
+              navigator.clipboard.writeText(allLogs)
+              setCopiedId('all')
+              setTimeout(() => setCopiedId(null), 2000)
+            }}
+            className="text-gray-400 hover:text-white p-1"
+            title="Copy all logs"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          </button>
+          {copiedId === 'all' && <span className="text-xs text-green-400">Copied!</span>}
           <button
             onClick={clearLogs}
             className="text-gray-400 hover:text-white p-1"
@@ -131,6 +153,26 @@ export default function DebugPanel() {
                       </details>
                     )}
                   </div>
+                  <button
+                    onClick={() => {
+                      const logText = `[${log.type.toUpperCase()}] ${log.timestamp.toLocaleTimeString()} - ${log.message}${log.details ? `\nDetails: ${typeof log.details === 'object' ? JSON.stringify(log.details, null, 2) : log.details}` : ''}`
+                      navigator.clipboard.writeText(logText)
+                      setCopiedId(log.id)
+                      setTimeout(() => setCopiedId(null), 2000)
+                    }}
+                    className="ml-2 text-gray-400 hover:text-white p-1 flex-shrink-0"
+                    title="Copy this log"
+                  >
+                    {copiedId === log.id ? (
+                      <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
               </div>
             ))
